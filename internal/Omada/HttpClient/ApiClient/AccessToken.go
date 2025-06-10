@@ -109,3 +109,21 @@ func (a *AccessToken) requestAccessToken(payload OpenApiRequestToken) error {
 
 	return nil
 }
+
+func (a *AccessToken) GetAccessToken() (string, error) {
+	if a.response == nil {
+		return "", fmt.Errorf("access token response is nil, please request a token first")
+	}
+
+	if time.Now().Unix() >= a.expirationDate {
+		if err := a.requestAccessToken(OpenApiRequestToken{
+			OmadaID:      a.omadaID,
+			ClientID:     a.clientID,
+			ClientSecret: a.clientSecret,
+		}); err != nil {
+			return "", fmt.Errorf("failed to refresh access token: %w", err)
+		}
+	}
+
+	return a.response.AccessToken, nil
+}
