@@ -14,7 +14,3 @@ type ApiInfoResponse struct {
 	MspMode           bool   `json:"mspMode"`
 	OmadaCloudUrl     string `json:"omadaCloudUrl"`
 }
-
-func (ApiInfoResponse) Path(placeholders map[string]string) string {
-	return PATH_API_INFO
-}

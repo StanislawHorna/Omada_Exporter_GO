@@ -12,37 +12,31 @@ import (
 
 const PATH_REQUEST_ACCESS_TOKEN = "/openapi/authorize/token"
 
-type GenericOmadaResponse[T any] struct {
-	ErrorCode int    `json:"errorCode"`
-	ErrorMsg  string `json:"errorMsg"`
-	Result    T      `json:"result"`
-}
-
-type OpenApiRequestToken struct {
+type OpenApiTokenPayload struct {
 	OmadaID      string `json:"omadacId"`
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 }
 
-type ResponseOpenApiAccessToken struct {
+type OpenApiAccessToken struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
 	TokenType    string `json:"tokenType"`
 	ExpiresIn    int    `json:"expiresIn"`
 }
 
-func (ResponseOpenApiAccessToken) Path(map[string]string) string {
+func (OpenApiAccessToken) Path(map[string]string) string {
 	return PATH_REQUEST_ACCESS_TOKEN
 }
 
-func (ResponseOpenApiAccessToken) Payload(data map[string]any) (any, error) {
-	var payload OpenApiRequestToken
+func (OpenApiAccessToken) Payload(data map[string]any) (any, error) {
+	var payload OpenApiTokenPayload
 	utils.MapToStruct(data, &payload)
 	return payload, nil
 }
 
 type AccessToken struct {
-	response       *ResponseOpenApiAccessToken
+	response       *OpenApiAccessToken
 	clientID       string
 	clientSecret   string
 	omadaID        string
@@ -51,7 +45,7 @@ type AccessToken struct {
 	expirationDate int64
 }
 
-func NewAccessToken(baseURL string, payload OpenApiRequestToken) (*AccessToken, error) {
+func NewAccessToken(baseURL string, payload OpenApiTokenPayload) (*AccessToken, error) {
 	if payload.ClientID == "" || payload.ClientSecret == "" || payload.OmadaID == "" {
 		return nil, fmt.Errorf("missing required fields in OpenApiRequestToken: ClientID, ClientSecret, or OmadaID")
 	}
@@ -72,7 +66,7 @@ func NewAccessToken(baseURL string, payload OpenApiRequestToken) (*AccessToken, 
 	return &a, nil
 }
 
-func (a *AccessToken) requestAccessToken(payload OpenApiRequestToken) error {
+func (a *AccessToken) requestAccessToken(payload OpenApiTokenPayload) error {
 	url, err := utils.CreateURL(
 		a.BaseURL,
 		PATH_REQUEST_ACCESS_TOKEN,
@@ -99,7 +93,7 @@ func (a *AccessToken) requestAccessToken(payload OpenApiRequestToken) error {
 		return fmt.Errorf("failed to get access token, status code: %d", response.StatusCode)
 	}
 
-	var omadaResult GenericOmadaResponse[ResponseOpenApiAccessToken]
+	var omadaResult Response[OpenApiAccessToken]
 	if err := json.NewDecoder(response.Body).Decode(&omadaResult); err != nil {
 		return fmt.Errorf("failed to decode response: %w", err)
 	}
@@ -116,7 +110,7 @@ func (a *AccessToken) GetAccessToken() (string, error) {
 	}
 
 	if time.Now().Unix() >= a.expirationDate {
-		if err := a.requestAccessToken(OpenApiRequestToken{
+		if err := a.requestAccessToken(OpenApiTokenPayload{
 			OmadaID:      a.omadaID,
 			ClientID:     a.clientID,
 			ClientSecret: a.clientSecret,

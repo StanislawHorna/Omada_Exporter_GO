@@ -5,9 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	OmadaRequests "omada_exporter_go/internal/Omada/HttpClient/Requests"
-	response "omada_exporter_go/internal/Omada/HttpClient/Requests/GenericResponse"
-	utils "omada_exporter_go/internal/Omada/HttpClient/Utils"
+	"omada_exporter_go/internal/Omada/HttpClient/Requests"
+	Utils "omada_exporter_go/internal/Omada/HttpClient/Utils"
 	"sync"
 )
 
@@ -39,6 +38,37 @@ func (c *ApiClient) fillInOmadaIDs(placeholders map[string]string) map[string]st
 	return placeholders
 }
 
+func (c *ApiClient) getApiInfo() (*Requests.ApiInfoResponse, error) {
+	if c.Http == nil {
+		return nil, fmt.Errorf("HTTP client is not initialized")
+	}
+	url, err := Utils.CreateURL(c.BaseURL, API_INFO_PATH, nil)
+	if err != nil {
+		fmt.Println("Error creating URL:", err)
+		return nil, err
+	}
+
+	res, err := c.Http.Get(url)
+	if err != nil {
+		fmt.Println("Error making GET request:", err)
+		return nil, err
+	}
+
+	defer res.Body.Close()
+	var apiInfoResponse Response[Requests.ApiInfoResponse]
+	if res.StatusCode != http.StatusOK {
+		fmt.Printf("Error: received status code %d from API\n", res.StatusCode)
+		return nil, err
+	}
+	if err := json.NewDecoder(res.Body).Decode(&apiInfoResponse); err != nil {
+		fmt.Println("Error decoding response:", err)
+		return nil, err
+	}
+
+	c.OmadaID = apiInfoResponse.Result.OmadaID
+	return &apiInfoResponse.Result, nil
+}
+
 var (
 	instance *ApiClient
 	once     sync.Once
@@ -55,18 +85,17 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 		Http:     &http.Client{Transport: customTransport},
 	}
 
-	apiInfoResponse, err := response.Get[OmadaRequests.ApiInfoResponse](apiClientObject.Http, apiClientObject.BaseURL, nil, nil)
+	var err error
 
+	_, err = apiClientObject.getApiInfo()
 	if err != nil {
 		fmt.Println("Error fetching API info:", err)
 		return nil
 	}
 
-	apiClientObject.OmadaID = apiInfoResponse.OmadaID
-
 	apiClientObject.auth, err = NewAccessToken(
 		apiClientObject.BaseURL,
-		OpenApiRequestToken{
+		OpenApiTokenPayload{
 			OmadaID:      apiClientObject.OmadaID,
 			ClientID:     ClientID,
 			ClientSecret: ClientSecret,
@@ -77,9 +106,9 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 		return nil
 	}
 
-	endpoint := OmadaRequests.SitesResponse{}.Path(map[string]string{"omadaID": apiClientObject.OmadaID})
+	endpoint := Utils.FillInEndpointPlaceholders(Requests.PATH_SITES, map[string]string{"omadaID": apiClientObject.OmadaID})
 
-	res, err := Get[OmadaRequests.SitesResponse](*apiClientObject, endpoint, map[string]string{"omadaID": apiClientObject.OmadaID}, nil)
+	res, err := Get[Requests.Sites](*apiClientObject, endpoint, map[string]string{"omadaID": apiClientObject.OmadaID}, nil)
 
 	if err != nil {
 		fmt.Println("Error fetching sites:", err)
@@ -101,62 +130,4 @@ func GetInstance(BaseURL string, ClientID string, ClientSecret string, SiteID st
 		instance = newClient(BaseURL, ClientID, ClientSecret, SiteID)
 	})
 	return instance
-}
-
-func Get[T any](client ApiClient, endpoint string, endpointPlaceholders map[string]string, queryParams map[string]string) (*[]T, error) {
-	endpointPlaceholders = client.fillInOmadaIDs(endpointPlaceholders)
-	endpoint = utils.FillInEndpointPlaceholders(endpoint, endpointPlaceholders)
-	if endpoint == "" {
-		fmt.Println("Endpoint cannot be empty")
-		return nil, fmt.Errorf("endpoint cannot be empty")
-	}
-
-	var allData []T
-	currentPage := 1
-
-	for {
-		queryParamsWithPage := AddPaginationParams(queryParams, currentPage)
-		url, err := utils.CreateURL(client.BaseURL, endpoint, queryParamsWithPage)
-		if err != nil {
-			fmt.Println("Error creating URL:", err)
-			return nil, err
-		}
-
-		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			fmt.Println("Error creating request:", err)
-			return nil, err
-		}
-
-		if err := client.setAuthorizationHeader(req); err != nil {
-			fmt.Println("Error setting authorization header:", err)
-			return nil, err
-		}
-
-		response, err := client.Http.Do(req)
-		if err != nil {
-			fmt.Println("Error making GET request:", err)
-			return nil, err
-		}
-		defer response.Body.Close()
-
-		if response.StatusCode != http.StatusOK {
-			fmt.Printf("Error: received status code %d from API\n", response.StatusCode)
-			return nil, fmt.Errorf("non-OK status code: %d", response.StatusCode)
-		}
-
-		var apiResponse Response[Page[T]]
-		if err := json.NewDecoder(response.Body).Decode(&apiResponse); err != nil {
-			return nil, fmt.Errorf("failed to decode response: %w", err)
-		}
-
-		allData = append(allData, apiResponse.Result.Data...)
-
-		if !apiResponse.Result.HasMorePages() {
-			break
-		}
-		currentPage = apiResponse.Result.CurrentPage + 1
-	}
-
-	return &allData, nil
 }
