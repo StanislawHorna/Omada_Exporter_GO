@@ -2,7 +2,7 @@ package ApiClient
 
 import "strconv"
 
-const DEFAULT_PAGE_SIZE = 1
+const DEFAULT_PAGE_SIZE = 100
 
 type Page[T any] struct {
 	TotalRows   int `json:"totalRows"`
