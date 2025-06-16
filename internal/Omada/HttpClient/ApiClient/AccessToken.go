@@ -6,8 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	utils "omada_exporter_go/internal/Omada/HttpClient/Utils"
 	"time"
+
+	utils "omada_exporter_go/internal/Omada/HttpClient/Utils"
 )
 
 const PATH_REQUEST_ACCESS_TOKEN = "/openapi/authorize/token"
@@ -109,7 +110,8 @@ func (a *AccessToken) GetAccessToken() (string, error) {
 		return "", fmt.Errorf("access token response is nil, please request a token first")
 	}
 
-	if time.Now().Unix() >= a.expirationDate {
+	// Check if the token is about to expire in the next 5 minutes (300 seconds)
+	if time.Now().Unix() >= (a.expirationDate - 300) {
 		if err := a.requestAccessToken(OpenApiTokenPayload{
 			OmadaID:      a.omadaID,
 			ClientID:     a.clientID,

@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"omada_exporter_go/internal"
-	Utils "omada_exporter_go/internal/Omada/HttpClient/Utils"
+	"omada_exporter_go/internal/Omada/HttpClient/Utils"
 	Model "omada_exporter_go/internal/Omada/Model"
 )
 
@@ -40,7 +40,7 @@ func (c *ApiClient) fillInOmadaIDs(placeholders map[string]string) map[string]st
 	return placeholders
 }
 
-func (c *ApiClient) getApiInfo() (*Model.OpenApiInfo, error) {
+func (c *ApiClient) GetApiInfo() (*Model.OpenApiInfo, error) {
 	if c.Http == nil {
 		return nil, fmt.Errorf("HTTP client is not initialized")
 	}
@@ -55,13 +55,13 @@ func (c *ApiClient) getApiInfo() (*Model.OpenApiInfo, error) {
 		fmt.Println("Error making GET request:", err)
 		return nil, err
 	}
-
-	defer res.Body.Close()
-	var apiInfoResponse Response[Model.OpenApiInfo]
 	if res.StatusCode != http.StatusOK {
 		fmt.Printf("Error: received status code %d from API\n", res.StatusCode)
 		return nil, err
 	}
+
+	defer res.Body.Close()
+	var apiInfoResponse Response[Model.OpenApiInfo]
 	if err := json.NewDecoder(res.Body).Decode(&apiInfoResponse); err != nil {
 		fmt.Println("Error decoding response:", err)
 		return nil, err
@@ -89,7 +89,7 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 
 	var err error
 
-	_, err = apiClientObject.getApiInfo()
+	_, err = apiClientObject.GetApiInfo()
 	if err != nil {
 		fmt.Println("Error fetching API info:", err)
 		return nil

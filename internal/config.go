@@ -9,9 +9,11 @@ import (
 type Config struct {
 	Omada struct {
 		OmadaURL     string `env:"OMADA_URL,required"`
-		SiteName     string `env:"SITE_NAME,required"`
-		ClientID     string `env:"CLIENT_ID,required"`
-		ClientSecret string `env:"CLIENT_SECRET,required"`
+		SiteName     string `env:"OMADA_SITE_NAME,required"`
+		ClientID     string `env:"OMADA_CLIENT_ID,required"`
+		ClientSecret string `env:"OMADA_CLIENT_SECRET,required"`
+		Username     string `env:"OMADA_USERNAME,required"`
+		Password     string `env:"OMADA_PASSWORD,required"`
 	}
 	Prometheus struct {
 		MetricsPath string `env:"METRICS_PATH" envDefault:"/metrics"`

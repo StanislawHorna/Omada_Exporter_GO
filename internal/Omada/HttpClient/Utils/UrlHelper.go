@@ -1,8 +1,10 @@
-package utils
+package Utils
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
+	"time"
 )
 
 func CreateURL(baseURL string, endpoint string, params map[string]string) (string, error) {
@@ -20,6 +22,14 @@ func CreateURL(baseURL string, endpoint string, params map[string]string) (strin
 	}
 
 	return u.String(), nil
+}
+
+func AddTimestampParam(params map[string]string) map[string]string {
+	if params == nil {
+		params = make(map[string]string)
+	}
+	params["_t"] = fmt.Sprintf("%d", time.Now().UnixMilli())
+	return params
 }
 
 func FillInEndpointPlaceholders(endpoint string, placeholders map[string]string) string {

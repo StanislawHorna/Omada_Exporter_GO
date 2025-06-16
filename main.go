@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"omada_exporter_go/internal/Omada/HttpClient/WebClient"
 	"omada_exporter_go/internal/Omada/Model/AccessPoint"
 	"omada_exporter_go/internal/Omada/Model/Devices"
 	"omada_exporter_go/internal/Omada/Model/Gateway"
@@ -11,11 +12,13 @@ import (
 
 func main() {
 	devices, err := Devices.Get()
-
 	if err != nil {
 		fmt.Println("Error fetching devices:", err)
 		return
 	}
+
+	WebClient.GetInstance()
+
 	switches, err := Switch.Get(*devices)
 	if err != nil {
 		fmt.Println("Error fetching switches:", err)
