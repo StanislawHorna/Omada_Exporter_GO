@@ -1,8 +1,8 @@
-package Requests
+package Devices
 
 const PATH_API_INFO = "/api/info"
 
-type ApiInfoResponse struct {
+type OpenApiInfo struct {
 	ControllerVersion string `json:"controllerVer"`
 	ApiVersion        string `json:"apiVer"`
 	Configured        bool   `json:"configured"`

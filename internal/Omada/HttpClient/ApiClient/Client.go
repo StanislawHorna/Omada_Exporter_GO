@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"omada_exporter_go/internal/Omada/HttpClient/Requests"
-	Utils "omada_exporter_go/internal/Omada/HttpClient/Utils"
 	"sync"
+
+	"omada_exporter_go/internal"
+	Utils "omada_exporter_go/internal/Omada/HttpClient/Utils"
+	Model "omada_exporter_go/internal/Omada/Model"
 )
 
 const API_INFO_PATH = "/api/info"
@@ -38,7 +40,7 @@ func (c *ApiClient) fillInOmadaIDs(placeholders map[string]string) map[string]st
 	return placeholders
 }
 
-func (c *ApiClient) getApiInfo() (*Requests.ApiInfoResponse, error) {
+func (c *ApiClient) getApiInfo() (*Model.OpenApiInfo, error) {
 	if c.Http == nil {
 		return nil, fmt.Errorf("HTTP client is not initialized")
 	}
@@ -55,7 +57,7 @@ func (c *ApiClient) getApiInfo() (*Requests.ApiInfoResponse, error) {
 	}
 
 	defer res.Body.Close()
-	var apiInfoResponse Response[Requests.ApiInfoResponse]
+	var apiInfoResponse Response[Model.OpenApiInfo]
 	if res.StatusCode != http.StatusOK {
 		fmt.Printf("Error: received status code %d from API\n", res.StatusCode)
 		return nil, err
@@ -106,9 +108,9 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 		return nil
 	}
 
-	endpoint := Utils.FillInEndpointPlaceholders(Requests.PATH_SITES, map[string]string{"omadaID": apiClientObject.OmadaID})
+	endpoint := Utils.FillInEndpointPlaceholders(Model.PATH_SITES, map[string]string{"omadaID": apiClientObject.OmadaID})
 
-	res, err := Get[Requests.Sites](*apiClientObject, endpoint, map[string]string{"omadaID": apiClientObject.OmadaID}, nil)
+	res, err := Get[Model.Sites](*apiClientObject, endpoint, map[string]string{"omadaID": apiClientObject.OmadaID}, nil, true)
 
 	if err != nil {
 		fmt.Println("Error fetching sites:", err)
@@ -125,9 +127,10 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 	return apiClientObject
 }
 
-func GetInstance(BaseURL string, ClientID string, ClientSecret string, SiteID string) *ApiClient {
+func GetApiClient() *ApiClient {
 	once.Do(func() {
-		instance = newClient(BaseURL, ClientID, ClientSecret, SiteID)
+		conf := internal.GetConfig().Omada
+		instance = newClient(conf.OmadaURL, conf.ClientID, conf.ClientSecret, conf.SiteName)
 	})
 	return instance
 }

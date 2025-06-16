@@ -1,4 +1,4 @@
-package Requests
+package Devices
 
 const PATH_SITES = "/openapi/v1/{omadaID}/sites"
 

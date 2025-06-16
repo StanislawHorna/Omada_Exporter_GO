@@ -8,10 +8,14 @@ import (
 
 type Config struct {
 	Omada struct {
-		OmadaURL     string `env:"OMADA_URL"`
-		SiteName     string `env:"SITE_NAME"`
-		ClientID     string `env:"CLIENT_ID"`
-		ClientSecret string `env:"CLIENT_SECRET"`
+		OmadaURL     string `env:"OMADA_URL,required"`
+		SiteName     string `env:"SITE_NAME,required"`
+		ClientID     string `env:"CLIENT_ID,required"`
+		ClientSecret string `env:"CLIENT_SECRET,required"`
+	}
+	Prometheus struct {
+		MetricsPath string `env:"METRICS_PATH" envDefault:"/metrics"`
+		MetricsPort string `env:"METRICS_PORT" envDefault:"8080"`
 	}
 }
 

@@ -1,21 +1,29 @@
-package Requests
+package Devices
 
 const PATH_DEVICES_LIST = "/openapi/v1/{omadaID}/sites/{siteID}/devices"
+
+type DeviceType string
+
+const (
+	DeviceType_Switch      DeviceType = "switch"
+	DeviceType_AccessPoint DeviceType = "ap"
+	DeviceType_Router      DeviceType = "gateway"
+)
 
 type DeviceStatus int
 
 const (
-	DeviceStatus_disconnected     = 0
-	DeviceStatus_connected        = 1
-	DeviceStatus_pending          = 2
-	DeviceStatus_heartbeatMissing = 3
-	DeviceStatus_isolated         = 4
+	DeviceStatus_disconnected     DeviceStatus = 0
+	DeviceStatus_connected        DeviceStatus = 1
+	DeviceStatus_pending          DeviceStatus = 2
+	DeviceStatus_heartbeatMissing DeviceStatus = 3
+	DeviceStatus_isolated         DeviceStatus = 4
 )
 
 type Device struct {
 	MacAddress string       `json:"mac"`
 	Name       string       `json:"name"`
-	Type       string       `json:"type"`
+	Type       DeviceType   `json:"type"`
 	Model      string       `json:"model"`
 	IP         string       `json:"ip"`
 	Uptime     string       `json:"uptime"`

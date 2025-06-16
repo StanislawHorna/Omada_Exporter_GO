@@ -28,7 +28,7 @@ func AddPaginationParams(params map[string]string, page int) map[string]string {
 
 func (p *Page[T]) HasMorePages() bool {
 	if p.CurrentPage <= 0 {
-		return true
+		return false
 	}
 	return p.TotalRows > (p.CurrentPage * p.CurrentSize)
 }
