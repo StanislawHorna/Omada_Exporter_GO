@@ -9,25 +9,46 @@ import (
 const path_OpenApiGateway = "/openapi/v1/{omadaID}/sites/{siteID}/gateways/{gatewayMac}"
 const path_WebApiGatewayPort = "{omadaID}/api/v2/sites/{siteID}/gateways/{gatewayMac}"
 
-type rawGatewayPort struct {
-	Port          int                       `json:"port"`
-	PortName      string                    `json:"name"`
-	PortDesc      string                    `json:"portDesc"`
-	Mode          Enum.GatewayPortMode      `json:"mode"`
-	IP            string                    `json:"ip"`
-	Poe           bool                      `json:"poe"`
-	LinkStatus    Enum.LinkStatus           `json:"status"`
+type rawWanPortIpv4Config struct {
+	IP            string `json:"ip"`
+	Gateway       string `json:"gateway"`
+	Gateway2      string `json:"gateway2"`
+	PrimaryDNS    string `json:"priDns"`
+	SecondaryDNS  string `json:"sndDns"`
+	PrimaryDNS2   string `json:"priDns2"`
+	SecondaryDNS2 string `json:"sndDns2"`
+}
+
+type rawWanPortIpv6Config struct {
+	Enable        int                       `json:"enable"`
+	Address       string                    `json:"addr"`
+	Gateway       string                    `json:"gateway"`
+	PrimaryDNS    string                    `json:"priDns"`
+	SecondaryDNS  string                    `json:"sndDns"`
 	InternetState Enum.GatewayInternetState `json:"internetState"`
-	Online        Enum.OnlineDetection      `json:"onlineDetection"`
-	LinkSpeed     Enum.LinkSpeed            `json:"speed"`
-	Duplex        Enum.DuplexMode           `json:"duplex"`
-	Tx            int64                     `json:"tx"`
-	Rx            int64                     `json:"rx"`
-	Protocol      string                    `json:"proto"`
-	// wanPortIpv6Config `json:"wanPortIpv6Config"`
-	// wanPortIpv4Config `json:"wanPortIpv4Config"`
-	Latency int     `json:"latency"`
-	Loss    float32 `json:"loss"`
+}
+
+type rawGatewayPort struct {
+	Port              int                       `json:"port"`
+	PortName          string                    `json:"name"`
+	PortDesc          string                    `json:"portDesc"`
+	Mode              Enum.GatewayPortMode      `json:"mode"`
+	IP                string                    `json:"ip"`
+	Poe               bool                      `json:"poe"`
+	LinkStatus        Enum.LinkStatus           `json:"status"`
+	InternetState     Enum.GatewayInternetState `json:"internetState"`
+	Online            Enum.OnlineDetection      `json:"onlineDetection"`
+	LinkSpeed         Enum.LinkSpeed            `json:"speed"`
+	Duplex            Enum.DuplexMode           `json:"duplex"`
+	TxBytes           int64                     `json:"tx"`
+	RxBytes           int64                     `json:"rx"`
+	TxPackets         int64                     `json:"txPkt"`
+	RxPackets         int64                     `json:"rxPkt"`
+	Protocol          string                    `json:"proto"`
+	WanPortIpv4Config rawWanPortIpv4Config      `json:"wanPortIpv4Config"`
+	WanPortIpv6Config rawWanPortIpv6Config      `json:"wanPortIpv6Config"`
+	Latency           int                       `json:"latency"`
+	Loss              float32                   `json:"loss"`
 }
 
 type rawGateway struct {
@@ -55,8 +76,12 @@ type GatewayPort struct {
 	Online          Enum.OnlineDetection
 	ReceiveBytes    int64
 	TransmitBytes   int64
+	ReceivePackets  int64
+	TransmitPackets int64
 	Latency         int
 	Loss            float32
+	IPv4Config      rawWanPortIpv4Config
+	IPv6Config      rawWanPortIpv6Config
 }
 
 func (gp *GatewayPort) merge(toMerge rawGatewayPort) error {
@@ -73,10 +98,14 @@ func (gp *GatewayPort) merge(toMerge rawGatewayPort) error {
 	gp.Online = toMerge.Online
 	gp.LinkSpeed = toMerge.LinkSpeed
 	gp.DuplexMode = toMerge.Duplex
-	gp.ReceiveBytes = toMerge.Rx
-	gp.TransmitBytes = toMerge.Tx
+	gp.ReceiveBytes = toMerge.RxBytes
+	gp.TransmitBytes = toMerge.TxBytes
+	gp.ReceivePackets = toMerge.RxPackets
+	gp.TransmitPackets = toMerge.TxPackets
 	gp.Latency = toMerge.Latency
 	gp.Loss = toMerge.Loss
+	gp.IPv4Config = toMerge.WanPortIpv4Config
+	gp.IPv6Config = toMerge.WanPortIpv6Config
 
 	return nil
 }

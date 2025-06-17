@@ -63,12 +63,6 @@ func (sp *SwitchPort) merge(toMerge rawSwitchPort) error {
 	sp.ReceiveBytes = toMerge.PortStatus.Receive
 	sp.TransmitBytes = toMerge.PortStatus.Transmit
 
-	// If port is down set speed and duplex as disabled
-	if sp.LinkStatus == Enum.LinkStatus_Down {
-		sp.LinkSpeed = Enum.LinkSpeed_Disabled
-		sp.DuplexMode = Enum.DuplexMode_Down
-	}
-
 	return nil
 }
 

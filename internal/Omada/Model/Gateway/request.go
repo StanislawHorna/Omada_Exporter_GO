@@ -34,6 +34,24 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 					if err := (*openApiResult)[0].PortList[i].merge(webPort); err != nil {
 						fmt.Printf("Error merging port data for gateway %s: %v\n", d.MacAddress, err)
 					}
+					// If port is down set speed and duplex as disabled
+					if (*openApiResult)[0].PortList[i].LinkStatus == Enum.LinkStatus_Down {
+						(*openApiResult)[0].PortList[i].Mode = Enum.GatewayPortMode_Disabled
+						(*openApiResult)[0].PortList[i].DuplexMode = Enum.DuplexMode_Down
+						(*openApiResult)[0].PortList[i].Online = Enum.OnlineDetection_PortDisabled
+						(*openApiResult)[0].PortList[i].LinkSpeed = Enum.LinkSpeed_Disabled
+						(*openApiResult)[0].PortList[i].DuplexMode = Enum.DuplexMode_Down
+						(*openApiResult)[0].PortList[i].Latency = 0
+						(*openApiResult)[0].PortList[i].Loss = 1.0
+
+					}
+					if (*openApiResult)[0].PortList[i].Mode == Enum.GatewayPortMode_LAN {
+						(*openApiResult)[0].PortList[i].Loss = 0.0  // Set loss to 0 for LAN ports
+						(*openApiResult)[0].PortList[i].Latency = 0 // Set latency to 0 for LAN ports
+
+						(*openApiResult)[0].PortList[i].Online = Enum.OnlineDetection_LAN_Port
+
+					}
 					break
 				}
 			}
