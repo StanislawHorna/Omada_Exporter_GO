@@ -164,3 +164,14 @@ func (c *WebClient) setAuthorizationHeader(req *http.Request) error {
 	req.Header.Set("Csrf-Token", c.Token)
 	return nil
 }
+
+func (c *WebClient) getHttpClient() (*http.Client, error) {
+	if !c.isLoggedIn() {
+		err := c.Login()
+		if err != nil {
+			return nil, fmt.Errorf("failed to log in: %w", err)
+		}
+	}
+
+	return c.Client, nil
+}

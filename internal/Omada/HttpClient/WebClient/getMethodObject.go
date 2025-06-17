@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
 	"omada_exporter_go/internal/Omada/HttpClient/Utils"
 )
 
@@ -29,12 +30,17 @@ func GetObject[T any](client WebClient, endpoint string, endpointPlaceholders ma
 		return nil, err
 	}
 
+	httpClient, err := client.getHttpClient()
+	if err != nil {
+		return nil, err
+	}
+
 	if err := client.setAuthorizationHeader(req); err != nil {
 		fmt.Println("Error setting authorization header:", err)
 		return nil, err
 	}
 
-	response, err := client.Client.Do(req)
+	response, err := httpClient.Do(req)
 	if err != nil {
 		fmt.Println("Error making GET request:", err)
 		return nil, err

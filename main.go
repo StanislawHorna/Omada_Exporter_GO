@@ -3,10 +3,8 @@ package main
 import (
 	"fmt"
 
-	"omada_exporter_go/internal/Omada/Model/AccessPoint"
 	"omada_exporter_go/internal/Omada/Model/Devices"
 	"omada_exporter_go/internal/Omada/Model/Gateway"
-	"omada_exporter_go/internal/Omada/Model/Switch"
 )
 
 func main() {
@@ -16,17 +14,17 @@ func main() {
 		return
 	}
 
-	switches, err := Switch.Get(*devices)
-	if err != nil {
-		fmt.Println("Error fetching switches:", err)
-		return
-	}
+	// switches, err := Switch.Get(*devices)
+	// if err != nil {
+	// 	fmt.Println("Error fetching switches:", err)
+	// 	return
+	// }
 
-	aps, err := AccessPoint.Get(*devices)
-	if err != nil {
-		fmt.Println("Error fetching access points:", err)
-		return
-	}
+	// aps, err := AccessPoint.Get(*devices)
+	// if err != nil {
+	// 	fmt.Println("Error fetching access points:", err)
+	// 	return
+	// }
 
 	router, err := Gateway.Get(*devices)
 	if err != nil {
@@ -35,13 +33,13 @@ func main() {
 	}
 
 	for _, r := range *router {
-		fmt.Printf("Gateway: %+v\n", r)
+		fmt.Printf("Gateway: %+v\n", r.PortList[0].TransmitBytes)
 	}
 
-	for _, ap := range *aps {
-		fmt.Printf("Access Point: %+v\n", ap)
-	}
-	for _, s := range *switches {
-		fmt.Printf("Switch: %+v\n", s)
-	}
+	// for _, ap := range *aps {
+	// 	fmt.Printf("Access Point: %+v\n", ap)
+	// }
+	// for _, s := range *switches {
+	// 	fmt.Printf("Switch: %+v\n", s)
+	// }
 }

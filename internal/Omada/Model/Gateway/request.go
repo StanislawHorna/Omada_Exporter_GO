@@ -27,22 +27,18 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 			return nil, err
 		}
 
-		fmt.Printf("Processing gateway %d\n", (*webApiResult)[0].LinkSpeed)
-
-		for i := range *openApiResult {
-			for j := range (*openApiResult)[i].PortList {
-				// Merge the web API data into the OpenAPI result
-				for _, webPort := range *webApiResult {
-					if (*openApiResult)[i].PortList[j].Port == webPort.Port {
-						if err := (*openApiResult)[i].PortList[j].merge(webPort); err != nil {
-							fmt.Printf("Error merging port data for gateway %s: %v\n", d.MacAddress, err)
-						}
-						break
+		for i := range (*openApiResult)[0].PortList {
+			// Merge the web API data into the OpenAPI result
+			for _, webPort := range *webApiResult {
+				if (*openApiResult)[0].PortList[i].Port == webPort.Port {
+					if err := (*openApiResult)[0].PortList[i].merge(webPort); err != nil {
+						fmt.Printf("Error merging port data for gateway %s: %v\n", d.MacAddress, err)
 					}
+					break
 				}
 			}
-
 		}
+
 		allData = append(allData, *openApiResult...)
 	}
 
