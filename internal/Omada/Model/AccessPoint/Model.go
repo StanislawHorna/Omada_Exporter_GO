@@ -1,10 +1,10 @@
 package AccessPoint
 
 import (
-	"omada_exporter_go/internal/Omada/Model/Devices"
+	"omada_exporter_go/internal/Omada/Enum"
 )
 
-const PATH_ACCESS_POINT = "/openapi/v1/{omadaID}/sites/{siteID}/aps/{apMac}"
+const path_OpenApiAccessPoint = "/openapi/v1/{omadaID}/sites/{siteID}/aps/{apMac}"
 
 type ApWirelessUpLink struct {
 	UplinkMac   string `json:"uplinkMac"`
@@ -23,7 +23,7 @@ type ApWirelessUpLink struct {
 }
 
 type AccessPoint struct {
-	DeviceType         Devices.DeviceType `json:"deviceType"`
+	DeviceType         Enum.DeviceType    `json:"deviceType"`
 	Name               string             `json:"name"`
 	MacAddress         string             `json:"mac"`
 	IP                 string             `json:"ip"`

@@ -20,12 +20,6 @@ const (
 	path_login_status = "/{omadaID}/api/v2/loginStatus"
 )
 
-type Response[T any] struct {
-	ErrorCode int    `json:"errorCode"`
-	Message   string `json:"msg"`
-	Result    T      `json:"result"`
-}
-
 type WebClient struct {
 	BaseURL  string
 	OmadaID  string
@@ -56,7 +50,7 @@ func newClient(baseURL string, username string, password string, siteName string
 	customTransport := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
-	openApiClient := ApiClient.GetApiClient()
+	openApiClient := ApiClient.GetInstance()
 
 	clientObject := &WebClient{
 		BaseURL:  baseURL,
@@ -167,9 +161,6 @@ func (c *WebClient) isLoggedIn() bool {
 }
 
 func (c *WebClient) setAuthorizationHeader(req *http.Request) error {
-	if !c.isLoggedIn() {
-		c.Login()
-	}
 	req.Header.Set("Csrf-Token", c.Token)
 	return nil
 }

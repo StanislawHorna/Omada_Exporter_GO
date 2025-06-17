@@ -1,32 +1,84 @@
 package Gateway
 
 import (
+	"fmt"
+
+	"omada_exporter_go/internal/Omada/Enum"
 	"omada_exporter_go/internal/Omada/HttpClient/ApiClient"
+	"omada_exporter_go/internal/Omada/HttpClient/WebClient"
 	"omada_exporter_go/internal/Omada/Model/Devices"
 )
 
 func Get(devices []Devices.Device) (*[]Gateway, error) {
-	client := ApiClient.GetApiClient()
 
 	var allData []Gateway
 
 	for _, d := range devices {
-		if d.Type != Devices.DeviceType_Router {
+		if d.Type != Enum.DeviceType_Gateway {
 			continue
 		}
-		result, err := ApiClient.Get[Gateway](*client, PATH_GATEWAY, map[string]string{"gatewayMac": d.MacAddress}, nil, false)
+		openApiResult, err := getOpenApiData(d)
 		if err != nil {
 			return nil, err
 		}
 
-		// Set the device type and name for each switch, based on device list
-		for i := range *result {
-			(*result)[i].DeviceType = Devices.DeviceType_Router
-			(*result)[i].Name = d.Name
+		webApiResult, err := getWebApiData(d)
+		if err != nil {
+			return nil, err
 		}
 
-		allData = append(allData, *result...)
+		fmt.Printf("Processing gateway %d\n", (*webApiResult)[0].LinkSpeed)
+
+		for i := range *openApiResult {
+			for j := range (*openApiResult)[i].PortList {
+				// Merge the web API data into the OpenAPI result
+				for _, webPort := range *webApiResult {
+					if (*openApiResult)[i].PortList[j].Port == webPort.Port {
+						if err := (*openApiResult)[i].PortList[j].merge(webPort); err != nil {
+							fmt.Printf("Error merging port data for gateway %s: %v\n", d.MacAddress, err)
+						}
+						break
+					}
+				}
+			}
+
+		}
+		allData = append(allData, *openApiResult...)
 	}
 
 	return &allData, nil
+}
+
+func getOpenApiData(d Devices.Device) (*[]Gateway, error) {
+	client := ApiClient.GetInstance()
+
+	result, err := ApiClient.Get[Gateway](*client, path_OpenApiGateway, map[string]string{"gatewayMac": d.MacAddress}, nil, false)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(*result) == 0 {
+		return nil, nil
+	}
+
+	// Set the device type and name based on device entry
+	(*result)[0].DeviceType = Enum.DeviceType_Gateway
+	(*result)[0].Name = d.Name
+
+	return result, nil
+}
+
+func getWebApiData(d Devices.Device) (*[]rawGatewayPort, error) {
+	client := WebClient.GetInstance()
+
+	result, err := WebClient.GetObject[rawGateway](*client, path_WebApiGatewayPort, map[string]string{"gatewayMac": d.MacAddress}, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if len((*result).PortStats) == 0 {
+		return nil, nil
+	}
+
+	return &(result.PortStats), nil
 }

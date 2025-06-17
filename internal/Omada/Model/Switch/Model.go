@@ -1,48 +1,89 @@
 package Switch
 
 import (
-	"omada_exporter_go/internal/Omada/Model/Devices"
+	"fmt"
+
+	"omada_exporter_go/internal/Omada/Enum"
 )
 
-const PATH_SWITCH = "/openapi/v1/{omadaID}/sites/{siteID}/switches/{switchMac}"
+const path_OpenApiSwitch = "/openapi/v1/{omadaID}/sites/{siteID}/switches/{switchMac}"
+const path_WebApiSwitchPort = "{omadaID}/api/v2/sites/{siteID}/switches/{switchMac}/ports"
 
-type PoeMode int8
+type rawSwitchPortStatus struct {
+	Port          int             `json:"port"`
+	LinkStatus    Enum.LinkStatus `json:"linkStatus"`
+	LinkSpeed     Enum.LinkSpeed  `json:"linkSpeed"`
+	Duplex        Enum.DuplexMode `json:"duplex"`
+	Poe           bool            `json:"poe"`
+	Transmit      int64           `json:"tx"`
+	Receive       int64           `json:"rx"`
+	StpDiscarding bool            `json:"stpDiscarding"`
+}
 
-const (
-	PoeMode_off PoeMode = 0
-	PoeMode_on  PoeMode = 1
-)
-
-type PortStatus int8
-
-const (
-	PortStatus_disabled PortStatus = 0
-	PortStatus_enabled  PortStatus = 1
-)
+type rawSwitchPort struct {
+	Port         int                 `json:"port"`
+	ProfileName  string              `json:"profileName"`
+	Disabled     bool                `json:"disabled"`
+	MaxLinkSpeed Enum.LinkSpeed      `json:"maxSpeed"`
+	PortStatus   rawSwitchPortStatus `json:"portStatus"`
+}
 
 type SwitchPort struct {
-	Port                   int        `json:"port"`
-	PortName               string     `json:"name"`
-	ProfileID              string     `json:"profileId"`
-	ProfileName            string     `json:"profileName"`
-	ProfileOverrideEnabled bool       `json:"profileOverrideEnabled"`
-	PoeMode                PoeMode    `json:"poeMode"`
-	LagPort                bool       `json:"lagPort"`
-	Status                 PortStatus `json:"status"`
+	// OpenAPI fields
+	Port                   int             `json:"port"`
+	PortName               string          `json:"name"`
+	ProfileID              string          `json:"profileId"`
+	ProfileName            string          `json:"profileName"`
+	ProfileOverrideEnabled bool            `json:"profileOverrideEnabled"`
+	PoeMode                Enum.PoeMode    `json:"poeMode"`
+	LagPort                bool            `json:"lagPort"`
+	Status                 Enum.PortStatus `json:"status"`
+
+	// WebAPI fields
+	Disabled      bool
+	LinkSpeed     Enum.LinkSpeed
+	LinkStatus    Enum.LinkStatus
+	MaxLinkSpeed  Enum.LinkSpeed
+	DuplexMode    Enum.DuplexMode
+	Poe           bool
+	ReceiveBytes  int64
+	TransmitBytes int64
+}
+
+func (sp *SwitchPort) merge(toMerge rawSwitchPort) error {
+	if sp.Port != toMerge.Port {
+		return fmt.Errorf("cannot merge SwitchPort with different port numbers: %d != %d", sp.Port, toMerge.Port)
+	}
+	sp.Disabled = toMerge.Disabled
+	sp.LinkSpeed = toMerge.PortStatus.LinkSpeed
+	sp.LinkStatus = toMerge.PortStatus.LinkStatus
+	sp.MaxLinkSpeed = toMerge.MaxLinkSpeed
+	sp.DuplexMode = toMerge.PortStatus.Duplex
+	sp.Poe = toMerge.PortStatus.Poe
+	sp.ReceiveBytes = toMerge.PortStatus.Receive
+	sp.TransmitBytes = toMerge.PortStatus.Transmit
+
+	// If port is down set speed and duplex as disabled
+	if sp.LinkStatus == Enum.LinkStatus_Down {
+		sp.LinkSpeed = Enum.LinkSpeed_Disabled
+		sp.DuplexMode = Enum.DuplexMode_Down
+	}
+
+	return nil
 }
 
 type Switch struct {
-	DeviceType      Devices.DeviceType `json:"deviceType"`
-	Name            string             `json:"name"`
-	MacAddress      string             `json:"mac"`
-	IP              string             `json:"ip"`
-	IPv6List        []string           `json:"ipv6List"`
-	Model           string             `json:"model"`
-	FirmwareVersion string             `json:"firmwareVersion"`
-	Version         string             `json:"version"`
-	HwVersion       string             `json:"hwVersion"`
-	CpuUsage        int                `json:"cpuUtil"`
-	RamUsage        int                `json:"memUtil"`
-	Uptime          string             `json:"uptime"`
-	PortList        []SwitchPort       `json:"portList"`
+	DeviceType      Enum.DeviceType `json:"deviceType"`
+	Name            string          `json:"name"`
+	MacAddress      string          `json:"mac"`
+	IP              string          `json:"ip"`
+	IPv6List        []string        `json:"ipv6List"`
+	Model           string          `json:"model"`
+	FirmwareVersion string          `json:"firmwareVersion"`
+	Version         string          `json:"version"`
+	HwVersion       string          `json:"hwVersion"`
+	CpuUsage        int             `json:"cpuUtil"`
+	RamUsage        int             `json:"memUtil"`
+	Uptime          string          `json:"uptime"`
+	PortList        []SwitchPort    `json:"portList"`
 }

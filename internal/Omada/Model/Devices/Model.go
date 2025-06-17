@@ -1,14 +1,8 @@
 package Devices
 
-const PATH_DEVICES_LIST = "/openapi/v1/{omadaID}/sites/{siteID}/devices"
+import "omada_exporter_go/internal/Omada/Enum"
 
-type DeviceType string
-
-const (
-	DeviceType_Switch      DeviceType = "switch"
-	DeviceType_AccessPoint DeviceType = "ap"
-	DeviceType_Router      DeviceType = "gateway"
-)
+const path_OpenApiDevicesList = "/openapi/v1/{omadaID}/sites/{siteID}/devices"
 
 type DeviceStatus int
 
@@ -21,17 +15,17 @@ const (
 )
 
 type Device struct {
-	MacAddress string       `json:"mac"`
-	Name       string       `json:"name"`
-	Type       DeviceType   `json:"type"`
-	Model      string       `json:"model"`
-	IP         string       `json:"ip"`
-	Uptime     string       `json:"uptime"`
-	LastSeen   int64        `json:"lastSeen"`
-	Status     DeviceStatus `json:"status"`
-	CpuUsage   int          `json:"cpuUtil"`
-	RamUsage   int          `json:"memUtil"`
-	TagName    string       `json:"tagName"`
+	MacAddress string          `json:"mac"`
+	Name       string          `json:"name"`
+	Type       Enum.DeviceType `json:"type"`
+	Model      string          `json:"model"`
+	IP         string          `json:"ip"`
+	Uptime     string          `json:"uptime"`
+	LastSeen   int64           `json:"lastSeen"`
+	Status     DeviceStatus    `json:"status"`
+	CpuUsage   int             `json:"cpuUtil"`
+	RamUsage   int             `json:"memUtil"`
+	TagName    string          `json:"tagName"`
 }
 
 func (d *Device) GetStatus() string {

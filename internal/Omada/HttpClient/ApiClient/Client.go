@@ -127,7 +127,7 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 	return apiClientObject
 }
 
-func GetApiClient() *ApiClient {
+func GetInstance() *ApiClient {
 	once.Do(func() {
 		conf := internal.GetConfig().Omada
 		instance = newClient(conf.OmadaURL, conf.ClientID, conf.ClientSecret, conf.SiteName)
