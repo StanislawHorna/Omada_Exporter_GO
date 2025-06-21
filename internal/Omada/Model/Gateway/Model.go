@@ -125,3 +125,31 @@ type Gateway struct {
 	LastSeen        int64           `json:"lastSeen"`
 	PortList        []GatewayPort   `json:"portConfigs"`
 }
+
+func (g Gateway) GetType() string {
+	return g.DeviceType.String()
+}
+func (g Gateway) GetMacAddress() string {
+	return g.MacAddress
+}
+func (g Gateway) GetName() string {
+	return g.Name
+}
+func (g Gateway) GetIP() string {
+	return g.IP
+}
+func (g Gateway) GetModel() string {
+	return g.Model
+}
+func (g Gateway) GetFirmware() string {
+	return g.FirmwareVersion
+}
+func (g Gateway) GetCpuUsage() float64 {
+	return float64(g.CpuUsage)
+}
+func (g Gateway) GetMemUsage() float64 {
+	return float64(g.RamUsage)
+}
+func (g Gateway) GetTemperature() float64 {
+	return float64(g.Temperature)
+}

@@ -1,4 +1,4 @@
-package Devices
+package Model
 
 const PATH_API_INFO = "/api/info"
 

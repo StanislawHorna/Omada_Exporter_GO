@@ -81,3 +81,32 @@ type Switch struct {
 	Uptime          string          `json:"uptime"`
 	PortList        []SwitchPort    `json:"portList"`
 }
+
+func (s Switch) GetType() string {
+	return s.DeviceType.String()
+}
+func (s Switch) GetMacAddress() string {
+	return s.MacAddress
+}
+func (s Switch) GetName() string {
+	return s.Name
+}
+func (s Switch) GetIP() string {
+	return s.IP
+}
+func (s Switch) GetModel() string {
+	return s.Model
+}
+func (s Switch) GetFirmware() string {
+	return s.FirmwareVersion
+}
+func (s Switch) GetCpuUsage() float64 {
+	return float64(s.CpuUsage)
+}
+func (s Switch) GetMemUsage() float64 {
+	return float64(s.RamUsage)
+}
+func (s Switch) GetTemperature() float64 {
+	// Switches do not provide temperature data
+	return -1
+}

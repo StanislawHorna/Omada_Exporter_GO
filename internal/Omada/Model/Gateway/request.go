@@ -36,7 +36,7 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 					}
 					// If port is down set speed and duplex as disabled
 					if (*openApiResult)[0].PortList[i].LinkStatus == Enum.LinkStatus_Down {
-						(*openApiResult)[0].PortList[i].Mode = Enum.GatewayPortMode_Disabled
+						(*openApiResult)[0].PortList[i].Mode = Enum.GatewayPortMode_Down
 						(*openApiResult)[0].PortList[i].DuplexMode = Enum.DuplexMode_Down
 						(*openApiResult)[0].PortList[i].Online = Enum.OnlineDetection_PortDisabled
 						(*openApiResult)[0].PortList[i].LinkSpeed = Enum.LinkSpeed_Disabled

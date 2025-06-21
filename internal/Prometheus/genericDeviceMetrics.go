@@ -1,0 +1,85 @@
+package Prometheus
+
+import (
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+
+	"omada_exporter_go/internal/Omada/Model"
+	"omada_exporter_go/internal/Prometheus/Utils"
+)
+
+const (
+	label_deviceName     string = "deviceName"
+	label_deviceModel    string = "deviceModel"
+	label_IP             string = "IP"
+	label_deviceFirmware string = "deviceFirmware"
+)
+
+var (
+	cpuUsage = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "cpu_usage",
+			Help: "The percentage of CPU usage",
+		},
+		identityLabels,
+	)
+
+	memoryUsage = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "memory_usage",
+			Help: "The percentage of memory usage",
+		},
+		identityLabels,
+	)
+
+	temperature = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "temperature",
+			Help: "The device temperature in degrees Celsius",
+		},
+		identityLabels,
+	)
+
+	device_info = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "device_info",
+			Help: "Information about the device",
+		},
+		append(identityLabels, []string{label_deviceName, label_deviceModel, label_IP, label_deviceFirmware}...),
+	)
+)
+
+func ExposeDeviceMetrics(devices []Model.DeviceInterface) {
+	for _, d := range devices {
+		identityLabels := getIdentityLabels(d)
+
+		cpuUsage.With(identityLabels).Set(d.GetCpuUsage())
+		memoryUsage.With(identityLabels).Set(d.GetMemUsage())
+
+		setDeviceTemperature(d, identityLabels)
+		setDeviceInfo(d, identityLabels)
+	}
+
+}
+
+func setDeviceTemperature(device Model.DeviceInterface, labels prometheus.Labels) {
+	temp := device.GetTemperature()
+	if temp >= 0 {
+		temperature.With(labels).Set(temp)
+	} else {
+		temperature.Delete(labels)
+	}
+}
+
+func setDeviceInfo(device Model.DeviceInterface, labels prometheus.Labels) {
+	// Delete all info metrics to avoid duplicates on changed labels
+	// new set of labels always creates new series, but old one is not deleted,
+	// even if it was not set in the current iteration
+	device_info.DeletePartialMatch(labels)
+	device_info.With(Utils.AppendMaps(map[string]string{
+		label_deviceName:     device.GetName(),
+		label_deviceModel:    device.GetModel(),
+		label_IP:             device.GetIP(),
+		label_deviceFirmware: device.GetFirmware(),
+	}, labels)).Set(1)
+}
