@@ -5,6 +5,19 @@ import (
 )
 
 const path_OpenApiAccessPoint = "/openapi/v1/{omadaID}/sites/{siteID}/aps/{apMac}"
+const path_WebApiAccessPointPort = "{omadaID}/api/v2/sites/{siteID}/eaps/{apMac}"
+
+type rawLanPort struct {
+	TxPackets int64 `json:"upPackets"`
+	RxPackets int64 `json:"downPackets"`
+	TxBytes   int64 `json:"upBytes"`
+	RxBytes   int64 `json:"downBytes"`
+}
+
+type rawAccessPoint struct {
+	HardwareVersion string     `json:"hwVersion"`
+	WiredUpLink     rawLanPort `json:"wiredUplink"`
+}
 
 type ApWirelessUpLink struct {
 	UplinkMac   string `json:"uplinkMac"`
@@ -23,6 +36,7 @@ type ApWirelessUpLink struct {
 }
 
 type AccessPoint struct {
+	// OpenAPI fields
 	DeviceType         Enum.DeviceType    `json:"deviceType"`
 	Name               string             `json:"name"`
 	MacAddress         string             `json:"mac"`
@@ -36,6 +50,13 @@ type AccessPoint struct {
 	RamUsage           int                `json:"memUtil"`
 	Uptime             int64              `json:"uptimeLong"`
 	LastSeen           float64
+
+	// WebAPI fields
+	HardwareVersion     string
+	PortReceiveBytes    int64
+	PortTransmitBytes   int64
+	PortReceivePackets  int64
+	PortTransmitPackets int64
 }
 
 func (ap AccessPoint) GetType() string {

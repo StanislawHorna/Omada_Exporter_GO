@@ -3,6 +3,7 @@ package AccessPoint
 import (
 	"omada_exporter_go/internal/Omada/Enum"
 	"omada_exporter_go/internal/Omada/HttpClient/ApiClient"
+	"omada_exporter_go/internal/Omada/HttpClient/WebClient"
 	"omada_exporter_go/internal/Omada/Model/Devices"
 )
 
@@ -25,10 +26,32 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 			(*result)[i].DeviceType = Enum.DeviceType_AccessPoint
 			(*result)[i].Name = d.Name
 			(*result)[i].LastSeen = d.LastSeen
+
+			webApiData, err := getWebApiData(d)
+			if err != nil {
+				return nil, err
+			}
+			(*result)[i].HardwareVersion = webApiData.HardwareVersion
+
+			(*result)[i].PortReceiveBytes = webApiData.WiredUpLink.RxBytes
+			(*result)[i].PortTransmitBytes = webApiData.WiredUpLink.TxBytes
+			(*result)[i].PortReceivePackets = webApiData.WiredUpLink.RxPackets
+			(*result)[i].PortTransmitPackets = webApiData.WiredUpLink.TxPackets
 		}
 
 		allData = append(allData, *result...)
 	}
 
 	return &allData, nil
+}
+
+func getWebApiData(d Devices.Device) (*rawAccessPoint, error) {
+	client := WebClient.GetInstance()
+
+	result, err := WebClient.GetObject[rawAccessPoint](*client, path_WebApiAccessPointPort, map[string]string{"apMac": d.MacAddress}, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return (result), nil
 }
