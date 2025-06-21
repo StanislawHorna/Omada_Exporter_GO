@@ -1,8 +1,8 @@
-package Model
+package Interface
 
 import "fmt"
 
-type DeviceInterface interface {
+type Device interface {
 	// Getters for device properties
 	GetType() string
 	GetMacAddress() string
@@ -16,9 +16,10 @@ type DeviceInterface interface {
 	GetMemUsage() float64
 
 	GetTemperature() float64 // Returns -1 if temperature is not available
+	GetLastSeen() float64    // Returns the last seen timestamp in milliseconds
 }
 
-func AppendDevicesSlice[T DeviceInterface](devices *[]DeviceInterface, newDevices []T) error {
+func AppendDevicesSlice[T Device](devices *[]Device, newDevices []T) error {
 	if devices == nil {
 		return fmt.Errorf("devices is nil")
 	}

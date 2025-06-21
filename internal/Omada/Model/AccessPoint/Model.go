@@ -35,6 +35,7 @@ type AccessPoint struct {
 	CpuUsage           int                `json:"cpuUtil"`
 	RamUsage           int                `json:"memUtil"`
 	Uptime             int64              `json:"uptimeLong"`
+	LastSeen           float64
 }
 
 func (ap AccessPoint) GetType() string {
@@ -64,4 +65,7 @@ func (ap AccessPoint) GetMemUsage() float64 {
 func (ap AccessPoint) GetTemperature() float64 {
 	// Access Points do not provide temperature data
 	return -1
+}
+func (ap AccessPoint) GetLastSeen() float64 {
+	return ap.LastSeen
 }

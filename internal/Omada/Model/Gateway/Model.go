@@ -122,7 +122,7 @@ type Gateway struct {
 	CpuUsage        int             `json:"cpuUtil"`
 	RamUsage        int             `json:"memUtil"`
 	IPv6List        []string        `json:"ipv6List"`
-	LastSeen        int64           `json:"lastSeen"`
+	LastSeen        float64         `json:"lastSeen"`
 	PortList        []GatewayPort   `json:"portConfigs"`
 }
 
@@ -152,4 +152,7 @@ func (g Gateway) GetMemUsage() float64 {
 }
 func (g Gateway) GetTemperature() float64 {
 	return float64(g.Temperature)
+}
+func (g Gateway) GetLastSeen() float64 {
+	return g.LastSeen
 }

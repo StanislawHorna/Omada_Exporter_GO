@@ -21,7 +21,7 @@ type Device struct {
 	Model      string          `json:"model"`
 	IP         string          `json:"ip"`
 	Uptime     string          `json:"uptime"`
-	LastSeen   int64           `json:"lastSeen"`
+	LastSeen   float64         `json:"lastSeen"`
 	Status     DeviceStatus    `json:"status"`
 	CpuUsage   int             `json:"cpuUtil"`
 	RamUsage   int             `json:"memUtil"`

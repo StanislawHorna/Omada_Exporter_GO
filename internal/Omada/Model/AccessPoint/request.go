@@ -24,6 +24,7 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 		for i := range *result {
 			(*result)[i].DeviceType = Enum.DeviceType_AccessPoint
 			(*result)[i].Name = d.Name
+			(*result)[i].LastSeen = d.LastSeen
 		}
 
 		allData = append(allData, *result...)

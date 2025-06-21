@@ -67,6 +67,7 @@ func getOpenApiData(d Devices.Device) (*[]Switch, error) {
 	// Set the device type and name based on device entry
 	(*result)[0].DeviceType = Enum.DeviceType_Switch
 	(*result)[0].Name = d.Name
+	(*result)[0].LastSeen = d.LastSeen
 
 	return result, nil
 }

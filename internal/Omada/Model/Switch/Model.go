@@ -75,11 +75,12 @@ type Switch struct {
 	Model           string          `json:"model"`
 	FirmwareVersion string          `json:"firmwareVersion"`
 	Version         string          `json:"version"`
-	HwVersion       string          `json:"hwVersion"`
+	HardwareVersion string          `json:"hwVersion"`
 	CpuUsage        int             `json:"cpuUtil"`
 	RamUsage        int             `json:"memUtil"`
 	Uptime          string          `json:"uptime"`
 	PortList        []SwitchPort    `json:"portList"`
+	LastSeen        float64
 }
 
 func (s Switch) GetType() string {
@@ -109,4 +110,7 @@ func (s Switch) GetMemUsage() float64 {
 func (s Switch) GetTemperature() float64 {
 	// Switches do not provide temperature data
 	return -1
+}
+func (s Switch) GetLastSeen() float64 {
+	return s.LastSeen
 }

@@ -4,7 +4,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 
-	"omada_exporter_go/internal/Omada/Model"
+	"omada_exporter_go/internal/Omada/Model/Interface"
 	"omada_exporter_go/internal/Prometheus/Utils"
 )
 
@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	cpuUsage = promauto.With(omadaRegistry).NewGaugeVec(
+	cpu_usage = promauto.With(omadaRegistry).NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "cpu_usage",
 			Help: "The percentage of CPU usage",
@@ -24,7 +24,7 @@ var (
 		identityLabels,
 	)
 
-	memoryUsage = promauto.With(omadaRegistry).NewGaugeVec(
+	memory_usage = promauto.With(omadaRegistry).NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "memory_usage",
 			Help: "The percentage of memory usage",
@@ -47,14 +47,23 @@ var (
 		},
 		append(identityLabels, []string{label_deviceName, label_deviceModel, label_IP, label_deviceFirmware}...),
 	)
+
+	device_last_seen = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "device_last_seen",
+			Help: "The last time the device was seen, in Unix timestamp format",
+		},
+		identityLabels,
+	)
 )
 
-func ExposeDeviceMetrics(devices []Model.DeviceInterface) {
+func ExposeDeviceMetrics(devices []Interface.Device) {
 	for _, d := range devices {
 		identityLabels := getIdentityLabels(d)
 
-		cpuUsage.With(identityLabels).Set(d.GetCpuUsage())
-		memoryUsage.With(identityLabels).Set(d.GetMemUsage())
+		cpu_usage.With(identityLabels).Set(d.GetCpuUsage())
+		memory_usage.With(identityLabels).Set(d.GetMemUsage())
+		device_last_seen.With(identityLabels).Set(d.GetLastSeen())
 
 		setDeviceTemperature(d, identityLabels)
 		setDeviceInfo(d, identityLabels)
@@ -62,7 +71,7 @@ func ExposeDeviceMetrics(devices []Model.DeviceInterface) {
 
 }
 
-func setDeviceTemperature(device Model.DeviceInterface, labels prometheus.Labels) {
+func setDeviceTemperature(device Interface.Device, labels prometheus.Labels) {
 	temp := device.GetTemperature()
 	if temp >= 0 {
 		temperature.With(labels).Set(temp)
@@ -71,8 +80,8 @@ func setDeviceTemperature(device Model.DeviceInterface, labels prometheus.Labels
 	}
 }
 
-func setDeviceInfo(device Model.DeviceInterface, labels prometheus.Labels) {
-	// Delete all info metrics to avoid duplicates on changed labels
+func setDeviceInfo(device Interface.Device, labels prometheus.Labels) {
+	// Delete all info metrics to avoid duplicates created due to changed labels
 	// new set of labels always creates new series, but old one is not deleted,
 	// even if it was not set in the current iteration
 	device_info.DeletePartialMatch(labels)
