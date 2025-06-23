@@ -72,10 +72,10 @@ func getOpenApiData(d Devices.Device) (*[]Switch, error) {
 	return result, nil
 }
 
-func getWebApiData(d Devices.Device) (*[]rawSwitchPort, error) {
+func getWebApiData(d Devices.Device) (*[]webApiSwitchPort, error) {
 	client := WebClient.GetInstance()
 
-	result, err := WebClient.GetList[rawSwitchPort](*client, path_WebApiSwitchPort, map[string]string{"switchMac": d.MacAddress}, nil, false)
+	result, err := WebClient.GetList[webApiSwitchPort](*client, path_WebApiSwitchPort, map[string]string{"switchMac": d.MacAddress}, nil, false)
 	if err != nil {
 		return nil, err
 	}

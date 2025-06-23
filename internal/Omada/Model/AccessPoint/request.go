@@ -31,15 +31,7 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 			if err != nil {
 				return nil, err
 			}
-			(*result)[i].HardwareVersion = webApiData.HardwareVersion
-
-			(*result)[i].PortList = make([]AccessPointPort, 1)
-			(*result)[i].PortList[0] = AccessPointPort{
-				PortReceiveBytes:    webApiData.WiredUpLink.RxBytes,
-				PortTransmitBytes:   webApiData.WiredUpLink.TxBytes,
-				PortReceivePackets:  webApiData.WiredUpLink.RxPackets,
-				PortTransmitPackets: webApiData.WiredUpLink.TxPackets,
-			}
+			(*result)[i].merge(webApiData)
 		}
 
 		allData = append(allData, *result...)
@@ -48,10 +40,10 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 	return &allData, nil
 }
 
-func getWebApiData(d Devices.Device) (*rawAccessPoint, error) {
+func getWebApiData(d Devices.Device) (*webApiAccessPoint, error) {
 	client := WebClient.GetInstance()
 
-	result, err := WebClient.GetObject[rawAccessPoint](*client, path_WebApiAccessPointPort, map[string]string{"apMac": d.MacAddress}, nil)
+	result, err := WebClient.GetObject[webApiAccessPoint](*client, path_WebApiAccessPointPort, map[string]string{"apMac": d.MacAddress}, nil)
 	if err != nil {
 		return nil, err
 	}

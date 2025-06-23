@@ -4,6 +4,10 @@ type Port interface {
 
 	// Getters for port properties
 	GetID() string
+	GetPortName() string
+	GetPortSpeed() float64
+	GetPortIP() string
+	GetPortProtocol() string
 
 	GetTxBytes() float64
 	GetRxBytes() float64
