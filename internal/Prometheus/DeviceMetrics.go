@@ -4,6 +4,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 
+	"omada_exporter_go/internal/Omada/Enum"
 	"omada_exporter_go/internal/Omada/Model/Interface"
 	"omada_exporter_go/internal/Prometheus/Utils"
 )
@@ -76,7 +77,7 @@ func ExposeDeviceMetrics(devices []Interface.Device) {
 
 func setDeviceTemperature(device Interface.Device, labels prometheus.Labels) {
 	temp := device.GetTemperature()
-	if temp >= 0 {
+	if temp > Enum.NotApplicable_Float {
 		temperature.With(labels).Set(temp)
 	} else {
 		temperature.Delete(labels)
