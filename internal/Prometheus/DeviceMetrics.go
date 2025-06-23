@@ -23,7 +23,7 @@ var (
 	cpu_usage = promauto.With(omadaRegistry).NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "cpu_usage",
-			Help: "The percentage of CPU usage",
+			Help: "The percentage of CPU usage (0 - 100)",
 		},
 		deviceIdentityLabels,
 	)
@@ -31,7 +31,7 @@ var (
 	memory_usage = promauto.With(omadaRegistry).NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "memory_usage",
-			Help: "The percentage of memory usage",
+			Help: "The percentage of memory usage (0 - 100)",
 		},
 		deviceIdentityLabels,
 	)
