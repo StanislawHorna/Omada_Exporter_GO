@@ -44,12 +44,19 @@ func (sp SwitchPort) GetPortName() string {
 func (sp SwitchPort) GetPortSpeed() float64 {
 	return float64(sp.LinkSpeed.Int())
 }
+func (sp SwitchPort) GetPortDuplex() float64 {
+	return float64(sp.DuplexMode.Int())
+}
 func (sp SwitchPort) GetPortIP() string {
 	// Switch ports do not have a specific IP address, return empty string
 	return Enum.NotApplicable_String
 }
 func (sp SwitchPort) GetPortProtocol() string {
 	// Access Point ports do not have a specific protocol, return empty string
+	return Enum.NotApplicable_String
+}
+func (sp SwitchPort) GetPortMode() string {
+	// Switch ports do not have a specific mode, return empty string
 	return Enum.NotApplicable_String
 }
 func (sp *SwitchPort) merge(toMerge webApiSwitchPort) error {

@@ -6,7 +6,9 @@ type Port interface {
 	GetID() string
 	GetPortName() string
 	GetPortSpeed() float64
+	GetPortDuplex() float64
 	GetPortIP() string
+	GetPortMode() string
 	GetPortProtocol() string
 
 	GetTxBytes() float64

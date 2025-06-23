@@ -24,6 +24,10 @@ func (app AccessPointPort) GetPortSpeed() float64 {
 	// Access Point Port does not have a specific speed, return 0
 	return 0
 }
+func (app AccessPointPort) GetPortDuplex() float64 {
+	// Access Point Port does not have a specific duplex mode, return 0
+	return 0
+}
 func (app AccessPointPort) GetPortName() string {
 	return "AP Port"
 }
@@ -33,5 +37,9 @@ func (app AccessPointPort) GetPortIP() string {
 }
 func (app AccessPointPort) GetPortProtocol() string {
 	// Access Point ports do not have a specific protocol, return empty string
+	return Enum.NotApplicable_String
+}
+func (app AccessPointPort) GetPortMode() string {
+	// Access Point ports do not have a specific mode, return empty string
 	return Enum.NotApplicable_String
 }

@@ -1,9 +1,12 @@
 package Prometheus
 
 import (
+	"fmt"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 
+	"omada_exporter_go/internal/Omada/Enum"
 	"omada_exporter_go/internal/Omada/Model/Interface"
 	"omada_exporter_go/internal/Prometheus/Utils"
 )
@@ -12,9 +15,10 @@ const (
 	label_portName     string = "portName"
 	label_portIP       string = "portIP"
 	label_portProtocol string = "portProtocol"
+	label_portMode     string = "portMode"
 )
 
-var portInfoLabels = []string{label_portName, label_portIP, label_portProtocol}
+var portInfoLabels = []string{label_portName, label_portIP, label_portProtocol, label_portMode}
 
 var (
 	port_rx_bytes_total = promauto.With(omadaRegistry).NewGaugeVec(
@@ -38,6 +42,16 @@ var (
 		},
 		portIdentityLabels,
 	)
+	port_duplex = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "port_duplex",
+			Help: fmt.Sprintf(
+				"Duplex mode of the port (%s)",
+				Enum.GetDuplexPossibleValues(),
+			),
+		},
+		portIdentityLabels,
+	)
 	port_info = promauto.With(omadaRegistry).NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_info",
@@ -56,6 +70,7 @@ func ExposePortMetrics(devices []Interface.Device) {
 			port_tx_bytes_total.With(labels).Set(float64(p.GetTxBytes()))
 
 			port_speed.With(labels).Set(p.GetPortSpeed())
+			port_duplex.With(labels).Set(p.GetPortDuplex())
 			setPortInfo(p, labels)
 		}
 	}
@@ -71,6 +86,7 @@ func setPortInfo(port Interface.Port, labels prometheus.Labels) {
 		label_portName:     port.GetPortName(),
 		label_portIP:       port.GetPortIP(),
 		label_portProtocol: port.GetPortProtocol(),
+		label_portMode:     port.GetPortMode(),
 	},
 	)).Set(1)
 }

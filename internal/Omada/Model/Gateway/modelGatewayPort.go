@@ -49,15 +49,31 @@ func (gp GatewayPort) GetTxBytes() float64 {
 	return float64(gp.TransmitBytes)
 }
 func (gp GatewayPort) GetPortName() string {
+	if gp.Mode != Enum.GatewayPortMode_WAN {
+		return gp.PortName
+	}
 	return gp.PortDescription
 }
 func (gp GatewayPort) GetPortSpeed() float64 {
 	return float64(gp.LinkSpeed.Int())
 }
+func (gp GatewayPort) GetPortDuplex() float64 {
+	return float64(gp.DuplexMode.Int())
+}
+
 func (gp GatewayPort) GetPortIP() string {
+	if gp.Mode != Enum.GatewayPortMode_WAN {
+		return Enum.NotApplicable_String
+	}
 	return gp.IP
 }
+func (gp GatewayPort) GetPortMode() string {
+	return gp.Mode.String()
+}
 func (gp GatewayPort) GetPortProtocol() string {
+	if gp.Mode != Enum.GatewayPortMode_WAN {
+		return Enum.NotApplicable_String
+	}
 	return gp.Protocol
 }
 func (gp *GatewayPort) merge(toMerge webApiGatewayPort) error {
