@@ -109,6 +109,9 @@ func (s Switch) GetIP() string {
 func (s Switch) GetModel() string {
 	return s.Model
 }
+func (s Switch) GetHardwareVersion() string {
+	return s.HardwareVersion
+}
 func (s Switch) GetFirmware() string {
 	return s.FirmwareVersion
 }

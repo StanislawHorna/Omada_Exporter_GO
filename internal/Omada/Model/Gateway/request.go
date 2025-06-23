@@ -27,9 +27,12 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 			return nil, err
 		}
 
+		// reference to slice index 0, since we expect only one gateway per MAC address
+		(*openApiResult)[0].HardwareVersion = webApiResult.HardwareVersion
+
 		for i := range (*openApiResult)[0].PortList {
 			// Merge the web API data into the OpenAPI result
-			for _, webPort := range *webApiResult {
+			for _, webPort := range (*webApiResult).PortStats {
 				if (*openApiResult)[0].PortList[i].Port == webPort.Port {
 					if err := (*openApiResult)[0].PortList[i].merge(webPort); err != nil {
 						fmt.Printf("Error merging port data for gateway %s: %v\n", d.MacAddress, err)
@@ -82,7 +85,7 @@ func getOpenApiData(d Devices.Device) (*[]Gateway, error) {
 	return result, nil
 }
 
-func getWebApiData(d Devices.Device) (*[]rawGatewayPort, error) {
+func getWebApiData(d Devices.Device) (*rawGateway, error) {
 	client := WebClient.GetInstance()
 
 	result, err := WebClient.GetObject[rawGateway](*client, path_WebApiGatewayPort, map[string]string{"gatewayMac": d.MacAddress}, nil)
@@ -94,5 +97,5 @@ func getWebApiData(d Devices.Device) (*[]rawGatewayPort, error) {
 		return nil, nil
 	}
 
-	return &(result.PortStats), nil
+	return result, nil
 }

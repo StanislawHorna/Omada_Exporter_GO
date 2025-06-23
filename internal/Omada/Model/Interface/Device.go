@@ -10,6 +10,7 @@ type Device interface {
 	GetIP() string
 	GetFirmware() string
 	GetModel() string
+	GetHardwareVersion() string
 
 	// Getters for device resource consumption
 	GetCpuUsage() float64

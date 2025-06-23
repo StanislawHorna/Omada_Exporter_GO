@@ -9,11 +9,14 @@ import (
 )
 
 const (
-	label_deviceName     string = "deviceName"
-	label_deviceModel    string = "deviceModel"
-	label_IP             string = "IP"
-	label_deviceFirmware string = "deviceFirmware"
+	label_deviceName      string = "deviceName"
+	label_deviceModel     string = "deviceModel"
+	label_IP              string = "IP"
+	label_deviceFirmware  string = "deviceFirmware"
+	label_HardwareVersion string = "hardwareVersion"
 )
+
+var deviceInfoLabels = []string{label_deviceName, label_deviceModel, label_IP, label_deviceFirmware, label_HardwareVersion}
 
 var (
 	cpu_usage = promauto.With(omadaRegistry).NewGaugeVec(
@@ -45,7 +48,7 @@ var (
 			Name: "device_info",
 			Help: "Information about the device",
 		},
-		append(deviceIdentityLabels, []string{label_deviceName, label_deviceModel, label_IP, label_deviceFirmware}...),
+		append(deviceIdentityLabels, deviceInfoLabels...),
 	)
 
 	device_last_seen = promauto.With(omadaRegistry).NewGaugeVec(
@@ -86,9 +89,10 @@ func setDeviceInfo(device Interface.Device, labels prometheus.Labels) {
 	// even if it was not set in the current iteration
 	device_info.DeletePartialMatch(labels)
 	device_info.With(Utils.AppendMaps(map[string]string{
-		label_deviceName:     device.GetName(),
-		label_deviceModel:    device.GetModel(),
-		label_IP:             device.GetIP(),
-		label_deviceFirmware: device.GetFirmware(),
+		label_deviceName:      device.GetName(),
+		label_deviceModel:     device.GetModel(),
+		label_IP:              device.GetIP(),
+		label_deviceFirmware:  device.GetFirmware(),
+		label_HardwareVersion: device.GetHardwareVersion(),
 	}, labels)).Set(1)
 }

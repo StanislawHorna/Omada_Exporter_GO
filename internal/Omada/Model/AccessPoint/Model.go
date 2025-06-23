@@ -91,6 +91,9 @@ func (ap AccessPoint) GetIP() string {
 func (ap AccessPoint) GetModel() string {
 	return ap.Model
 }
+func (ap AccessPoint) GetHardwareVersion() string {
+	return ap.HardwareVersion
+}
 func (ap AccessPoint) GetFirmware() string {
 	return ap.FirmwareVersion
 }

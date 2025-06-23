@@ -53,7 +53,8 @@ type rawGatewayPort struct {
 }
 
 type rawGateway struct {
-	PortStats []rawGatewayPort `json:"portStats"`
+	HardwareVersion string           `json:"hwVersion"`
+	PortStats       []rawGatewayPort `json:"portStats"`
 }
 
 // Implements Interface.Port
@@ -122,6 +123,7 @@ func (gp GatewayPort) GetTxBytes() float64 {
 }
 
 type Gateway struct {
+	// OpenAPI fields
 	DeviceType      Enum.DeviceType `json:"deviceType"`
 	Name            string          `json:"name"`
 	MacAddress      string          `json:"mac"`
@@ -135,6 +137,9 @@ type Gateway struct {
 	IPv6List        []string        `json:"ipv6List"`
 	LastSeen        float64         `json:"lastSeen"`
 	PortList        []GatewayPort   `json:"portConfigs"`
+
+	// WebAPI fields
+	HardwareVersion string
 }
 
 func (g Gateway) GetType() string {
@@ -151,6 +156,9 @@ func (g Gateway) GetIP() string {
 }
 func (g Gateway) GetModel() string {
 	return g.Model
+}
+func (g Gateway) GetHardwareVersion() string {
+	return g.HardwareVersion
 }
 func (g Gateway) GetFirmware() string {
 	return g.FirmwareVersion
