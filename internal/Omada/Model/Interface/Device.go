@@ -17,6 +17,9 @@ type Device interface {
 
 	GetTemperature() float64 // Returns -1 if temperature is not available
 	GetLastSeen() float64    // Returns the last seen timestamp in milliseconds
+
+	// Getters for object associated with device
+	GetPorts() []Port
 }
 
 func AppendDevicesSlice[T Device](devices *[]Device, newDevices []T) error {

@@ -35,7 +35,7 @@ func AddTimestampParam(params map[string]string) map[string]string {
 func FillInEndpointPlaceholders(endpoint string, placeholders map[string]string) string {
 	for key, value := range placeholders {
 		placeholder := "{" + key + "}"
-		endpoint = strings.Replace(endpoint, placeholder, value, -1)
+		endpoint = strings.ReplaceAll(endpoint, placeholder, value)
 	}
 	return endpoint
 }

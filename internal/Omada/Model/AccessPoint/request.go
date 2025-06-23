@@ -33,10 +33,13 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 			}
 			(*result)[i].HardwareVersion = webApiData.HardwareVersion
 
-			(*result)[i].PortReceiveBytes = webApiData.WiredUpLink.RxBytes
-			(*result)[i].PortTransmitBytes = webApiData.WiredUpLink.TxBytes
-			(*result)[i].PortReceivePackets = webApiData.WiredUpLink.RxPackets
-			(*result)[i].PortTransmitPackets = webApiData.WiredUpLink.TxPackets
+			(*result)[i].PortList = make([]AccessPointPort, 1)
+			(*result)[i].PortList[0] = AccessPointPort{
+				PortReceiveBytes:    webApiData.WiredUpLink.RxBytes,
+				PortTransmitBytes:   webApiData.WiredUpLink.TxBytes,
+				PortReceivePackets:  webApiData.WiredUpLink.RxPackets,
+				PortTransmitPackets: webApiData.WiredUpLink.TxPackets,
+			}
 		}
 
 		allData = append(allData, *result...)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"omada_exporter_go/internal/Omada/Enum"
+	"omada_exporter_go/internal/Omada/Model/Interface"
 )
 
 const path_OpenApiGateway = "/openapi/v1/{omadaID}/sites/{siteID}/gateways/{gatewayMac}"
@@ -55,6 +56,7 @@ type rawGateway struct {
 	PortStats []rawGatewayPort `json:"portStats"`
 }
 
+// Implements Interface.Port
 type GatewayPort struct {
 	// OpenAPI fields
 	Port          int             `json:"port"`
@@ -109,6 +111,15 @@ func (gp *GatewayPort) merge(toMerge rawGatewayPort) error {
 
 	return nil
 }
+func (gp GatewayPort) GetID() string {
+	return fmt.Sprintf("%d", gp.Port)
+}
+func (gp GatewayPort) GetRxBytes() float64 {
+	return float64(gp.ReceiveBytes)
+}
+func (gp GatewayPort) GetTxBytes() float64 {
+	return float64(gp.TransmitBytes)
+}
 
 type Gateway struct {
 	DeviceType      Enum.DeviceType `json:"deviceType"`
@@ -155,4 +166,7 @@ func (g Gateway) GetTemperature() float64 {
 }
 func (g Gateway) GetLastSeen() float64 {
 	return g.LastSeen
+}
+func (g Gateway) GetPorts() []Interface.Port {
+	return Interface.ConvertToPortInterface(g.PortList)
 }

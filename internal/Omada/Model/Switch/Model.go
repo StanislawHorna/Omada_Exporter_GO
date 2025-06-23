@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"omada_exporter_go/internal/Omada/Enum"
+	"omada_exporter_go/internal/Omada/Model/Interface"
 )
 
 const path_OpenApiSwitch = "/openapi/v1/{omadaID}/sites/{siteID}/switches/{switchMac}"
@@ -28,6 +29,7 @@ type rawSwitchPort struct {
 	PortStatus   rawSwitchPortStatus `json:"portStatus"`
 }
 
+// Implements Interface.Port
 type SwitchPort struct {
 	// OpenAPI fields
 	Port                   int             `json:"port"`
@@ -64,6 +66,15 @@ func (sp *SwitchPort) merge(toMerge rawSwitchPort) error {
 	sp.TransmitBytes = toMerge.PortStatus.Transmit
 
 	return nil
+}
+func (sp SwitchPort) GetID() string {
+	return fmt.Sprintf("%d", sp.Port)
+}
+func (sp SwitchPort) GetRxBytes() float64 {
+	return float64(sp.ReceiveBytes)
+}
+func (sp SwitchPort) GetTxBytes() float64 {
+	return float64(sp.TransmitBytes)
 }
 
 type Switch struct {
@@ -113,4 +124,9 @@ func (s Switch) GetTemperature() float64 {
 }
 func (s Switch) GetLastSeen() float64 {
 	return s.LastSeen
+}
+
+// Implements Interface.Port
+func (s Switch) GetPorts() []Interface.Port {
+	return Interface.ConvertToPortInterface(s.PortList)
 }

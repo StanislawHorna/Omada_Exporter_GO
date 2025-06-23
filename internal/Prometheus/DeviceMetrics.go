@@ -21,7 +21,7 @@ var (
 			Name: "cpu_usage",
 			Help: "The percentage of CPU usage",
 		},
-		identityLabels,
+		deviceIdentityLabels,
 	)
 
 	memory_usage = promauto.With(omadaRegistry).NewGaugeVec(
@@ -29,7 +29,7 @@ var (
 			Name: "memory_usage",
 			Help: "The percentage of memory usage",
 		},
-		identityLabels,
+		deviceIdentityLabels,
 	)
 
 	temperature = promauto.With(omadaRegistry).NewGaugeVec(
@@ -37,7 +37,7 @@ var (
 			Name: "temperature",
 			Help: "The device temperature in degrees Celsius",
 		},
-		identityLabels,
+		deviceIdentityLabels,
 	)
 
 	device_info = promauto.With(omadaRegistry).NewGaugeVec(
@@ -45,7 +45,7 @@ var (
 			Name: "device_info",
 			Help: "Information about the device",
 		},
-		append(identityLabels, []string{label_deviceName, label_deviceModel, label_IP, label_deviceFirmware}...),
+		append(deviceIdentityLabels, []string{label_deviceName, label_deviceModel, label_IP, label_deviceFirmware}...),
 	)
 
 	device_last_seen = promauto.With(omadaRegistry).NewGaugeVec(
@@ -53,13 +53,13 @@ var (
 			Name: "device_last_seen",
 			Help: "The last time the device was seen, in Unix timestamp format",
 		},
-		identityLabels,
+		deviceIdentityLabels,
 	)
 )
 
 func ExposeDeviceMetrics(devices []Interface.Device) {
 	for _, d := range devices {
-		identityLabels := getIdentityLabels(d)
+		identityLabels := getDeviceIdentityLabels(d)
 
 		cpu_usage.With(identityLabels).Set(d.GetCpuUsage())
 		memory_usage.With(identityLabels).Set(d.GetMemUsage())

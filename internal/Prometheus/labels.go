@@ -9,15 +9,26 @@ import (
 const (
 	label_deviceType string = "deviceType"
 	label_macAddress string = "macAddress"
+	label_portID     string = "portID"
 )
 
-var identityLabels = []string{label_deviceType, label_macAddress}
+var deviceIdentityLabels = []string{label_deviceType, label_macAddress}
+
+var portIdentityLabels = []string{label_deviceType, label_macAddress, label_portID}
 
 var omadaRegistry = prometheus.NewRegistry()
 
-func getIdentityLabels(device Interface.Device) prometheus.Labels {
+func getDeviceIdentityLabels(device Interface.Device) prometheus.Labels {
 	return prometheus.Labels{
 		label_deviceType: device.GetType(),
 		label_macAddress: device.GetMacAddress(),
+	}
+}
+
+func getPortIdentityLabels(device Interface.Device, port Interface.Port) prometheus.Labels {
+	return prometheus.Labels{
+		label_deviceType: device.GetType(),
+		label_macAddress: device.GetMacAddress(),
+		label_portID:     port.GetID(),
 	}
 }

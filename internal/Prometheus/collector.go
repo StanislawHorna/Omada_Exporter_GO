@@ -39,6 +39,7 @@ func CollectMetrics() error {
 		fmt.Println("failed to get access points: %w", err)
 	}
 	ExposeDeviceMetrics(omadaDevices)
+	ExposePortMetrics(omadaDevices)
 
 	return nil
 }

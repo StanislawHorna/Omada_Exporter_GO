@@ -2,6 +2,7 @@ package AccessPoint
 
 import (
 	"omada_exporter_go/internal/Omada/Enum"
+	"omada_exporter_go/internal/Omada/Model/Interface"
 )
 
 const path_OpenApiAccessPoint = "/openapi/v1/{omadaID}/sites/{siteID}/aps/{apMac}"
@@ -35,6 +36,25 @@ type ApWirelessUpLink struct {
 	Activity    int    `json:"activity"`
 }
 
+// Implements Interface.Port
+type AccessPointPort struct {
+	PortReceiveBytes    int64
+	PortTransmitBytes   int64
+	PortReceivePackets  int64
+	PortTransmitPackets int64
+}
+
+func (app AccessPointPort) GetID() string {
+	// Access Point Port does not have a specific port number, return 1
+	return "1"
+}
+func (app AccessPointPort) GetRxBytes() float64 {
+	return float64(app.PortReceiveBytes)
+}
+func (app AccessPointPort) GetTxBytes() float64 {
+	return float64(app.PortTransmitBytes)
+}
+
 type AccessPoint struct {
 	// OpenAPI fields
 	DeviceType         Enum.DeviceType    `json:"deviceType"`
@@ -52,11 +72,8 @@ type AccessPoint struct {
 	LastSeen           float64
 
 	// WebAPI fields
-	HardwareVersion     string
-	PortReceiveBytes    int64
-	PortTransmitBytes   int64
-	PortReceivePackets  int64
-	PortTransmitPackets int64
+	PortList        []AccessPointPort
+	HardwareVersion string
 }
 
 func (ap AccessPoint) GetType() string {
@@ -89,4 +106,7 @@ func (ap AccessPoint) GetTemperature() float64 {
 }
 func (ap AccessPoint) GetLastSeen() float64 {
 	return ap.LastSeen
+}
+func (ap AccessPoint) GetPorts() []Interface.Port {
+	return Interface.ConvertToPortInterface(ap.PortList)
 }
