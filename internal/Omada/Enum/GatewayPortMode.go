@@ -11,7 +11,7 @@ const (
 func (gpm GatewayPortMode) String() string {
 	switch gpm {
 	case GatewayPortMode_Down:
-		return "Down"
+		return ""
 	case GatewayPortMode_WAN:
 		return "WAN"
 	case GatewayPortMode_LAN:

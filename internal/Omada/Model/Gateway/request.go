@@ -51,7 +51,6 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 					if (*openApiResult)[0].PortList[i].Mode == Enum.GatewayPortMode_LAN {
 						(*openApiResult)[0].PortList[i].Loss = 0.0  // Set loss to 0 for LAN ports
 						(*openApiResult)[0].PortList[i].Latency = 0 // Set latency to 0 for LAN ports
-
 						(*openApiResult)[0].PortList[i].Online = Enum.OnlineDetection_LAN_Port
 
 					}
