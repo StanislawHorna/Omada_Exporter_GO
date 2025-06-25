@@ -28,7 +28,7 @@ type GatewayPort struct {
 	Poe             bool
 	LinkStatus      Enum.LinkStatus
 	InternetState   Enum.GatewayInternetState
-	Online          Enum.OnlineDetection
+	Online          Enum.UpstreamState
 	ReceiveBytes    int64
 	TransmitBytes   int64
 	ReceivePackets  int64
@@ -78,6 +78,9 @@ func (gp GatewayPort) GetPortProtocol() string {
 }
 func (gp GatewayPort) GetInternetState() float64 {
 	return float64(gp.InternetState.Int())
+}
+func (gp GatewayPort) GetUpstreamState() float64 {
+	return float64(gp.Online.Int())
 }
 func (gp *GatewayPort) merge(toMerge webApiGatewayPort) error {
 	if gp.Port != toMerge.Port {
