@@ -48,7 +48,7 @@ func Get(devices []Devices.Device) (*[]Switch, error) {
 
 	}
 
-	Log.Info("Fetched %d switches", len(allDataOpenApi))
+	Log.Debug("Fetched %d switches", len(allDataOpenApi))
 
 	return &allDataOpenApi, nil
 }

@@ -61,7 +61,7 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 		allData = append(allData, *openApiResult...)
 	}
 
-	Log.Info("Fetched %d gateways", len(allData))
+	Log.Debug("Fetched %d gateways", len(allData))
 
 	return &allData, nil
 }

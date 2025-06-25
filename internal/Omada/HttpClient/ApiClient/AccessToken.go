@@ -101,6 +101,8 @@ func (a *AccessToken) requestAccessToken(payload OpenApiTokenPayload) error {
 	a.response = &omadaResult.Result
 	a.expirationDate = time.Now().Unix() + int64(a.response.ExpiresIn)
 
+	Log.Info("OpenAPI access token requested successfully. URL: %s", a.BaseURL)
+
 	return nil
 }
 

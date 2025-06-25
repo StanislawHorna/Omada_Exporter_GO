@@ -43,7 +43,7 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 		allData = append(allData, *result...)
 	}
 
-	Log.Info("Fetched %d access points", len(allData))
+	Log.Debug("Fetched %d access points", len(allData))
 
 	return &allData, nil
 }
