@@ -139,3 +139,15 @@ func (apr AccessPointRadio) GetRxUsage() float64 {
 func (apr AccessPointRadio) GetInterference() float64 {
 	return apr.Interference
 }
+func (apr AccessPointRadio) GetActualChannel() string {
+	return apr.ActualChannel
+}
+func (apr AccessPointRadio) GetMode() string {
+	return apr.Mode
+}
+func (apr AccessPointRadio) GetBandwidth() string {
+	return apr.Bandwidth
+}
+func (apr AccessPointRadio) GetMaxTxRate() float64 {
+	return apr.MaxTxRate * 1000 * 1000
+}

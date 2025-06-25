@@ -5,7 +5,16 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 
 	"omada_exporter_go/internal/Omada/Model/Interface"
+	"omada_exporter_go/internal/Prometheus/Utils"
 )
+
+const (
+	label_channel   string = "channel"
+	label_bandwidth string = "bandwidth"
+	label_mode      string = "mode"
+)
+
+var radioInfoLabels = []string{label_channel, label_bandwidth, label_mode}
 
 var (
 	radio_tx_bytes_total = promauto.With(omadaRegistry).NewGaugeVec(
@@ -87,6 +96,20 @@ var (
 		},
 		radioIdentityLabels,
 	)
+	radio_max_tx_rate = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "radio_max_tx_rate",
+			Help: "Maximum transmission rate of the radio in bits per second",
+		},
+		radioIdentityLabels,
+	)
+	radio_info = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "radio_info",
+			Help: "Information about radio interface of the device",
+		},
+		append(radioIdentityLabels, radioInfoLabels...),
+	)
 )
 
 func ExposeRadioMetrics(devices []Interface.Device) {
@@ -110,6 +133,22 @@ func ExposeRadioMetrics(devices []Interface.Device) {
 			radio_tx_usage.With(labels).Set(r.GetTxUsage())
 			radio_rx_usage.With(labels).Set(r.GetRxUsage())
 			radio_interference.With(labels).Set(r.GetInterference())
+
+			radio_max_tx_rate.With(labels).Set(r.GetMaxTxRate())
+
+			setRadioInfo(r, labels)
 		}
 	}
+}
+
+func setRadioInfo(radio Interface.Radio, labels prometheus.Labels) {
+	// Delete all info metrics to avoid duplicates created due to changed labels
+	// new set of labels always creates new series, but old one is not deleted,
+	// even if it was not set in the current iteration
+	radio_info.Delete(labels)
+	radio_info.With(Utils.AppendMaps(labels, map[string]string{
+		label_channel:   radio.GetActualChannel(),
+		label_bandwidth: radio.GetBandwidth(),
+		label_mode:      radio.GetMode(),
+	})).Set(1)
 }

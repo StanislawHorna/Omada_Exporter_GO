@@ -16,6 +16,11 @@ type Radio interface {
 	GetTxUsage() float64
 	GetRxUsage() float64
 	GetInterference() float64
+
+	GetActualChannel() string
+	GetMode() string
+	GetBandwidth() string
+	GetMaxTxRate() float64
 }
 
 func ConvertToRadioInterface[T Radio](radiosToConvert []T) []Radio {
