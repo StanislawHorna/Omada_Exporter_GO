@@ -80,9 +80,9 @@ var (
 		},
 		radioIdentityLabels,
 	)
-	radio_interface = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_interference = promauto.With(omadaRegistry).NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "radio_interface",
+			Name: "radio_interference",
 			Help: "Information about radio interface of the device",
 		},
 		radioIdentityLabels,
@@ -109,7 +109,7 @@ func ExposeRadioMetrics(devices []Interface.Device) {
 
 			radio_tx_usage.With(labels).Set(r.GetTxUsage())
 			radio_rx_usage.With(labels).Set(r.GetRxUsage())
-			radio_interface.With(labels).Set(r.GetInterference())
+			radio_interference.With(labels).Set(r.GetInterference())
 		}
 	}
 }
