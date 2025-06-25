@@ -34,6 +34,10 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 				return nil, Log.Error(err, "Failed to get web API data for AP %s", d.MacAddress)
 			}
 			(*result)[i].merge(webApiData)
+
+			if err := getOpenApiRadioData(&(*result)[i]); err != nil {
+				return nil, Log.Error(err, "Failed to get radio data for AP %s", d.MacAddress)
+			}
 		}
 
 		allData = append(allData, *result...)
@@ -53,4 +57,18 @@ func getWebApiData(d Devices.Device) (*webApiAccessPoint, error) {
 	}
 
 	return (result), nil
+}
+
+func getOpenApiRadioData(ap *AccessPoint) error {
+	client := ApiClient.GetInstance()
+
+	result, err := ApiClient.Get[rawAccessPointRadio](*client, path_OpenApiAccessPointRadio, map[string]string{"apMac": ap.MacAddress}, nil, false)
+	if err != nil {
+		return Log.Error(err, "Failed to get access point radio data for AP %s", ap.MacAddress)
+	}
+	// ApiClient.Get returns a slice of rawAccessPointRadio, but we expect a single item
+	radioData := (*result)[0]
+	ap.RadioList = radioData.ConvertToAccessPointRadio()
+
+	return nil
 }

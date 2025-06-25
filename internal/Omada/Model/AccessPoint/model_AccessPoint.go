@@ -5,7 +5,9 @@ import (
 	"omada_exporter_go/internal/Omada/Model/Interface"
 )
 
-const path_OpenApiAccessPoint = "/openapi/v1/{omadaID}/sites/{siteID}/aps/{apMac}"
+const (
+	path_OpenApiAccessPoint = "/openapi/v1/{omadaID}/sites/{siteID}/aps/{apMac}"
+)
 
 // Implements Interface.Device
 type AccessPoint struct {
@@ -23,6 +25,8 @@ type AccessPoint struct {
 	RamUsage           int                `json:"memUtil"`
 	Uptime             int64              `json:"uptimeLong"`
 	LastSeen           float64
+
+	RadioList []AccessPointRadio
 
 	// WebAPI fields
 	PortList        []AccessPointPort
@@ -66,6 +70,10 @@ func (ap AccessPoint) GetLastSeen() float64 {
 func (ap AccessPoint) GetPorts() []Interface.Port {
 	return Interface.ConvertToPortInterface(ap.PortList)
 }
+func (ap AccessPoint) GetRadios() []Interface.Radio {
+	return Interface.ConvertToRadioInterface(ap.RadioList)
+}
+
 func (ap *AccessPoint) merge(toMerge *webApiAccessPoint) {
 	ap.HardwareVersion = toMerge.HardwareVersion
 	ap.PortList = make([]AccessPointPort, 1)

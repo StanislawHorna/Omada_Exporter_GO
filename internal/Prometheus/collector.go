@@ -40,6 +40,6 @@ func CollectMetrics() error {
 	}
 	ExposeDeviceMetrics(omadaDevices)
 	ExposePortMetrics(omadaDevices)
-
+	ExposeRadioMetrics(omadaDevices)
 	return nil
 }

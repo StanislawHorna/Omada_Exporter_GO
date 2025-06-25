@@ -21,6 +21,7 @@ type Device interface {
 
 	// Getters for object associated with device
 	GetPorts() []Port
+	GetRadios() []Radio
 }
 
 func AppendDevicesSlice[T Device](devices *[]Device, newDevices []T) error {

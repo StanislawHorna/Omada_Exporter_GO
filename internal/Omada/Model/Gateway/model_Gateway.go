@@ -62,3 +62,7 @@ func (g Gateway) GetLastSeen() float64 {
 func (g Gateway) GetPorts() []Interface.Port {
 	return Interface.ConvertToPortInterface(g.PortList)
 }
+func (g Gateway) GetRadios() []Interface.Radio {
+	// Gateways do not have radios
+	return nil
+}

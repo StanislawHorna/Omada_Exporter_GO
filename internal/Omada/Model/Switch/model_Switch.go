@@ -62,3 +62,7 @@ func (s Switch) GetLastSeen() float64 {
 func (s Switch) GetPorts() []Interface.Port {
 	return Interface.ConvertToPortInterface(s.PortList)
 }
+func (s Switch) GetRadios() []Interface.Radio {
+	// Switches do not have radios
+	return nil
+}
