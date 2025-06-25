@@ -51,3 +51,9 @@ func (app AccessPointPort) GetUpstreamState() float64 {
 	// Access Point do not have an upstream state, return NotApplicable
 	return Enum.NotApplicable_Float
 }
+func (app AccessPointPort) GetInternetLatency() float64 {
+	return Enum.NotApplicable_Float
+}
+func (app AccessPointPort) GetInternetLoss() float64 {
+	return Enum.NotApplicable_Float
+}

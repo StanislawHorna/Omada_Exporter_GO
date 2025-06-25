@@ -15,6 +15,8 @@ type Port interface {
 
 	// Getters for specific port properties
 	GetInternetState() float64
+	GetInternetLatency() float64
+	GetInternetLoss() float64
 	GetUpstreamState() float64
 	GetPortProtocol() string
 }

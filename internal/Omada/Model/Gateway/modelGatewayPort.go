@@ -33,8 +33,8 @@ type GatewayPort struct {
 	TransmitBytes   int64
 	ReceivePackets  int64
 	TransmitPackets int64
-	Latency         int
-	Loss            float32
+	Latency         float64
+	Loss            float64
 	IPv4Config      webApiWanPortIpv4Config
 	IPv6Config      webApiWanPortIpv6Config
 }
@@ -81,6 +81,18 @@ func (gp GatewayPort) GetInternetState() float64 {
 }
 func (gp GatewayPort) GetUpstreamState() float64 {
 	return float64(gp.Online.Int())
+}
+func (gp GatewayPort) GetInternetLatency() float64 {
+	if gp.Mode != Enum.GatewayPortMode_WAN {
+		return -1
+	}
+	return gp.Latency
+}
+func (gp GatewayPort) GetInternetLoss() float64 {
+	if gp.Mode != Enum.GatewayPortMode_WAN {
+		return -1
+	}
+	return gp.Loss
 }
 func (gp *GatewayPort) merge(toMerge webApiGatewayPort) error {
 	if gp.Port != toMerge.Port {

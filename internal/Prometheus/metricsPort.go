@@ -59,22 +59,35 @@ var (
 		},
 		append(portIdentityLabels, portInfoLabels...),
 	)
-
-	port_internet_state = promauto.With(omadaRegistry).NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name: "port_internet_state",
-			Help: fmt.Sprintf("Internet state of the port, for WAN ports of the router only (%s)",
-				Enum.GetInternetStatePossibleValues(),
-			),
-		},
-		portIdentityLabels,
-	)
 	port_upstream_state = promauto.With(omadaRegistry).NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_upstream_state",
 			Help: fmt.Sprintf("Router port upstream state (%s)",
 				Enum.GetRouterUpstreamStatePossibleValues(),
 			),
+		},
+		portIdentityLabels,
+	)
+	port_internet_state = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "port_internet_state",
+			Help: fmt.Sprintf("Router port Internet state (%s)",
+				Enum.GetInternetStatePossibleValues(),
+			),
+		},
+		portIdentityLabels,
+	)
+	port_internet_latency = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "port_internet_latency",
+			Help: "Router port Internet latency in milliseconds",
+		},
+		portIdentityLabels,
+	)
+	port_internet_loss = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "port_internet_loss",
+			Help: "Router port Internet loss in percentage (0 - 100)",
 		},
 		portIdentityLabels,
 	)
@@ -94,9 +107,14 @@ func ExposePortMetrics(devices []Interface.Device) {
 			if p.GetInternetState() != Enum.NotApplicable_Float {
 				port_internet_state.With(labels).Set(p.GetInternetState())
 			}
-
 			if p.GetUpstreamState() != Enum.NotApplicable_Float {
 				port_upstream_state.With(labels).Set(p.GetUpstreamState())
+			}
+			if p.GetInternetLatency() != Enum.NotApplicable_Float {
+				port_internet_latency.With(labels).Set(p.GetInternetLatency())
+			}
+			if p.GetInternetLoss() != Enum.NotApplicable_Float {
+				port_internet_loss.With(labels).Set(p.GetInternetLoss())
 			}
 
 			setPortInfo(p, labels)

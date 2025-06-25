@@ -67,6 +67,12 @@ func (sp SwitchPort) GetUpstreamState() float64 {
 	// Switch ports do not have an upstream state, return NotApplicable
 	return Enum.NotApplicable_Float
 }
+func (sp SwitchPort) GetInternetLatency() float64 {
+	return Enum.NotApplicable_Float
+}
+func (sp SwitchPort) GetInternetLoss() float64 {
+	return Enum.NotApplicable_Float
+}
 func (sp *SwitchPort) merge(toMerge webApiSwitchPort) error {
 	if sp.Port != toMerge.Port {
 		return fmt.Errorf("cannot merge SwitchPort with different port numbers: %d != %d", sp.Port, toMerge.Port)

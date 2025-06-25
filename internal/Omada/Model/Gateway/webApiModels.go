@@ -42,8 +42,8 @@ type webApiGatewayPort struct {
 	Protocol          string                    `json:"proto"`
 	WanPortIpv4Config webApiWanPortIpv4Config   `json:"wanPortIpv4Config"`
 	WanPortIpv6Config webApiWanPortIpv6Config   `json:"wanPortIpv6Config"`
-	Latency           int                       `json:"latency"`
-	Loss              float32                   `json:"loss"`
+	Latency           float64                   `json:"latency"`
+	Loss              float64                   `json:"loss"`
 }
 
 type rawGateway struct {
