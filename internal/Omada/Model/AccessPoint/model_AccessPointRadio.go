@@ -40,9 +40,9 @@ func mergeConfigAndTraffic(freq Enum.RadioFrequency, config apRadioConfig, traff
 		Region:        config.Region,
 		Bandwidth:     config.Bandwidth,
 		Mode:          config.Mode,
-		TxUtil:        config.TxUtil,
-		RxUtil:        config.RxUtil,
-		InterUtil:     config.InterUtil,
+		TxUsage:       config.TxUtil,
+		RxUsage:       config.RxUtil,
+		Interference:  config.InterUtil,
 
 		// Traffic
 		ReceivePackets:  traffic.RxPkts,
@@ -86,9 +86,9 @@ type AccessPointRadio struct {
 	Region        int
 	Bandwidth     string
 	Mode          string
-	TxUtil        float64
-	RxUtil        float64
-	InterUtil     float64
+	TxUsage       float64
+	RxUsage       float64
+	Interference  float64
 
 	// Traffic data
 	ReceivePackets  float64
@@ -111,4 +111,31 @@ func (apr AccessPointRadio) GetTxBytes() float64 {
 }
 func (apr AccessPointRadio) GetRxBytes() float64 {
 	return apr.ReceiveBytes
+}
+func (apr AccessPointRadio) GetTxDrops() float64 {
+	return apr.TxDropPackets
+}
+func (apr AccessPointRadio) GetRxDrops() float64 {
+	return apr.RxDropPackets
+}
+func (apr AccessPointRadio) GetTxErrors() float64 {
+	return apr.TxErrPackets
+}
+func (apr AccessPointRadio) GetRxErrors() float64 {
+	return apr.RxErrPackets
+}
+func (apr AccessPointRadio) GetTxRetries() float64 {
+	return apr.TxRetryPackets
+}
+func (apr AccessPointRadio) GetRxRetries() float64 {
+	return apr.RxRetryPackets
+}
+func (apr AccessPointRadio) GetTxUsage() float64 {
+	return apr.TxUsage
+}
+func (apr AccessPointRadio) GetRxUsage() float64 {
+	return apr.RxUsage
+}
+func (apr AccessPointRadio) GetInterference() float64 {
+	return apr.Interference
 }
