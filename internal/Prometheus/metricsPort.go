@@ -72,8 +72,8 @@ var (
 	port_upstream_state = promauto.With(omadaRegistry).NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_upstream_state",
-			Help: fmt.Sprintf("Upstream state of the port, for WAN ports of the router only (%s)",
-				Enum.GetUpstreamStatePossibleValues(),
+			Help: fmt.Sprintf("Router port upstream state (%s)",
+				Enum.GetRouterUpstreamStatePossibleValues(),
 			),
 		},
 		portIdentityLabels,

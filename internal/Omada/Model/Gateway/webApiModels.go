@@ -32,7 +32,7 @@ type webApiGatewayPort struct {
 	Poe               bool                      `json:"poe"`
 	LinkStatus        Enum.LinkStatus           `json:"status"`
 	InternetState     Enum.GatewayInternetState `json:"internetState"`
-	Online            Enum.UpstreamState        `json:"onlineDetection"`
+	Online            Enum.RouterUpstreamState  `json:"onlineDetection"`
 	LinkSpeed         Enum.LinkSpeed            `json:"speed"`
 	Duplex            Enum.DuplexMode           `json:"duplex"`
 	TxBytes           int64                     `json:"tx"`

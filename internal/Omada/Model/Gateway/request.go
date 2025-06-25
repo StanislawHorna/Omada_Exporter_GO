@@ -40,7 +40,7 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 					if (*openApiResult)[0].PortList[i].LinkStatus == Enum.LinkStatus_Down {
 						(*openApiResult)[0].PortList[i].Mode = Enum.GatewayPortMode_Down
 						(*openApiResult)[0].PortList[i].DuplexMode = Enum.DuplexMode_Down
-						(*openApiResult)[0].PortList[i].Online = Enum.UpstreamState_PortDisabled
+						(*openApiResult)[0].PortList[i].Online = Enum.RouterUpstreamState_PortDisabled
 						(*openApiResult)[0].PortList[i].LinkSpeed = Enum.LinkSpeed_Disabled
 						(*openApiResult)[0].PortList[i].DuplexMode = Enum.DuplexMode_Down
 						(*openApiResult)[0].PortList[i].Latency = 0
@@ -50,7 +50,7 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 					if (*openApiResult)[0].PortList[i].Mode == Enum.GatewayPortMode_LAN {
 						(*openApiResult)[0].PortList[i].Loss = 0.0  // Set loss to 0 for LAN ports
 						(*openApiResult)[0].PortList[i].Latency = 0 // Set latency to 0 for LAN ports
-						(*openApiResult)[0].PortList[i].Online = Enum.UpstreamState_LAN_Port
+						(*openApiResult)[0].PortList[i].Online = Enum.RouterUpstreamState_LAN_Port
 
 					}
 					break

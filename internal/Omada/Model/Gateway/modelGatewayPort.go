@@ -28,7 +28,7 @@ type GatewayPort struct {
 	Poe             bool
 	LinkStatus      Enum.LinkStatus
 	InternetState   Enum.GatewayInternetState
-	Online          Enum.UpstreamState
+	Online          Enum.RouterUpstreamState
 	ReceiveBytes    int64
 	TransmitBytes   int64
 	ReceivePackets  int64
