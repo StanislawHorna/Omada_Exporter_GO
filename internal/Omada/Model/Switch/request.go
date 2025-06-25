@@ -1,8 +1,7 @@
 package Switch
 
 import (
-	"fmt"
-
+	"omada_exporter_go/internal/Log"
 	"omada_exporter_go/internal/Omada/Enum"
 	"omada_exporter_go/internal/Omada/HttpClient/ApiClient"
 	"omada_exporter_go/internal/Omada/HttpClient/WebClient"
@@ -10,7 +9,7 @@ import (
 )
 
 func Get(devices []Devices.Device) (*[]Switch, error) {
-
+	Log.Debug("Fetching switches data")
 	var allDataOpenApi []Switch
 
 	for _, d := range devices {
@@ -20,12 +19,12 @@ func Get(devices []Devices.Device) (*[]Switch, error) {
 
 		openApiResult, err := getOpenApiData(d)
 		if err != nil {
-			return nil, err
+			return nil, Log.Error(err, "Failed to get OpenAPI data for switch %s", d.MacAddress)
 		}
 
 		webApiResult, err := getWebApiData(d)
 		if err != nil {
-			return nil, err
+			return nil, Log.Error(err, "Failed to get WebAPI data for switch %s", d.MacAddress)
 		}
 
 		for i := range (*openApiResult)[0].PortList {
@@ -33,7 +32,7 @@ func Get(devices []Devices.Device) (*[]Switch, error) {
 			for _, webPort := range *webApiResult {
 				if (*openApiResult)[0].PortList[i].Port == webPort.Port {
 					if err := (*openApiResult)[0].PortList[i].merge(webPort); err != nil {
-						fmt.Printf("Error merging port data for switch %s: %v\n", d.MacAddress, err)
+						Log.Error(err, "Failed to merge port data for switch %s", d.MacAddress)
 					}
 					// If port is down set speed and duplex as disabled
 					if (*openApiResult)[0].PortList[i].LinkStatus == Enum.LinkStatus_Down {
@@ -49,6 +48,8 @@ func Get(devices []Devices.Device) (*[]Switch, error) {
 
 	}
 
+	Log.Info("Fetched %d switches", len(allDataOpenApi))
+
 	return &allDataOpenApi, nil
 }
 
@@ -61,6 +62,7 @@ func getOpenApiData(d Devices.Device) (*[]Switch, error) {
 	}
 
 	if len(*result) == 0 {
+		Log.Warn("No OpenAPI data found for switch %s", d.MacAddress)
 		return nil, nil
 	}
 
@@ -80,6 +82,7 @@ func getWebApiData(d Devices.Device) (*[]webApiSwitchPort, error) {
 		return nil, err
 	}
 	if len(*result) == 0 {
+		Log.Warn("No WebAPI data found for switch %s", d.MacAddress)
 		return nil, nil
 	}
 

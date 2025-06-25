@@ -1,6 +1,7 @@
 package AccessPoint
 
 import (
+	"omada_exporter_go/internal/Log"
 	"omada_exporter_go/internal/Omada/Enum"
 	"omada_exporter_go/internal/Omada/HttpClient/ApiClient"
 	"omada_exporter_go/internal/Omada/HttpClient/WebClient"
@@ -8,6 +9,7 @@ import (
 )
 
 func Get(devices []Devices.Device) (*[]AccessPoint, error) {
+	Log.Debug("Fetching access points data")
 	client := ApiClient.GetInstance()
 
 	var allData []AccessPoint
@@ -18,7 +20,7 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 		}
 		result, err := ApiClient.Get[AccessPoint](*client, path_OpenApiAccessPoint, map[string]string{"apMac": d.MacAddress}, nil, false)
 		if err != nil {
-			return nil, err
+			return nil, Log.Error(err, "Failed to get access point data for AP %s", d.MacAddress)
 		}
 
 		// Set the device type and name for each access point, based on device list
@@ -29,13 +31,15 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 
 			webApiData, err := getWebApiData(d)
 			if err != nil {
-				return nil, err
+				return nil, Log.Error(err, "Failed to get web API data for AP %s", d.MacAddress)
 			}
 			(*result)[i].merge(webApiData)
 		}
 
 		allData = append(allData, *result...)
 	}
+
+	Log.Info("Fetched %d access points", len(allData))
 
 	return &allData, nil
 }

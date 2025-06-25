@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"omada_exporter_go/internal"
+	"omada_exporter_go/internal/Log"
 	"omada_exporter_go/internal/Omada/HttpClient/ApiClient"
 	"omada_exporter_go/internal/Omada/HttpClient/Utils"
 )
@@ -68,10 +69,11 @@ func newClient(baseURL string, username string, password string, siteName string
 	clientObject.Login()
 
 	if !clientObject.isLoggedIn() {
-		fmt.Println("Failed to log in to Omada controller")
+		Log.Error(nil, "Failed to log in to Omada controller WebUI")
 		return nil
 	}
 
+	Log.Info("New WebAPI client created. URL: %s, Site: %s", baseURL, siteName)
 	return clientObject
 }
 
@@ -87,34 +89,36 @@ func (c *WebClient) Login() error {
 	endpoint := Utils.FillInEndpointPlaceholders(path_login, c.fillInOmadaIDs(nil))
 	if endpoint == "" {
 		fmt.Println("Endpoint cannot be empty")
-		return fmt.Errorf("endpoint cannot be empty")
+		return Log.Error(nil, "Endpoint cannot be empty")
 	}
 
 	url, err := Utils.CreateURL(c.BaseURL, endpoint, nil)
 	if err != nil {
-		return fmt.Errorf("error creating URL: %w", err)
+		return Log.Error(err, "Error creating URL")
 	}
 	bodyBytes, err := json.Marshal(map[string]string{"username": c.username, "password": c.password})
 	if err != nil {
-		return fmt.Errorf("error marshalling request body: %w", err)
+		return Log.Error(err, "Error marshalling request body")
 	}
 
 	response, err := c.Client.Post(url, "application/json", bytes.NewReader(bodyBytes))
 	if err != nil {
-		return fmt.Errorf("error making POST request: %w", err)
+		return Log.Error(err, "Error making POST request to login endpoint")
 	}
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("non-ok status code: %d", response.StatusCode)
+		return Log.Error(nil, "Received non-OK status code from login endpoint: %d", response.StatusCode)
 	}
 
 	defer response.Body.Close()
 	var loginResponse Response[Login]
 	if err := json.NewDecoder(response.Body).Decode(&loginResponse); err != nil {
-		return fmt.Errorf("failed to decode response: %w", err)
+		return Log.Error(err, "Error decoding login response")
 	}
 	if loginResponse.ErrorCode != 0 {
-		return fmt.Errorf("API error: %s (code %d)", loginResponse.Message, loginResponse.ErrorCode)
+		return Log.Error(nil, "API error: %s (code %d)", loginResponse.Message, loginResponse.ErrorCode)
 	}
+
+	Log.Info("Logged in successfully to Omada controller WebUI. URL: %s, Site: %s", c.BaseURL, c.SiteName)
 	c.Token = loginResponse.Result.Token
 	return nil
 }
@@ -122,38 +126,40 @@ func (c *WebClient) Login() error {
 func (c *WebClient) isLoggedIn() bool {
 	endpoint := Utils.FillInEndpointPlaceholders(path_login_status, c.fillInOmadaIDs(nil))
 	if endpoint == "" {
-		fmt.Println("Endpoint cannot be empty")
+		Log.Error(nil, "Endpoint cannot be empty")
 		return false
 	}
 
 	url, err := Utils.CreateURL(c.BaseURL, endpoint, Utils.AddTimestampParam(nil))
 	if err != nil {
-		fmt.Println("Error creating URL:", err)
+		Log.Error(err, "Error creating URL")
 		return false
 	}
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		fmt.Println("Error creating request:", err)
+		Log.Error(err, "Error creating GET request")
 		return false
 	}
 
 	if err := c.setAuthorizationHeader(req); err != nil {
-		fmt.Println("Error setting authorization header:", err)
+		Log.Error(err, "Error setting authorization header")
 		return false
 	}
 
 	response, err := c.Client.Do(req)
 	if err != nil {
-		fmt.Println("Error making GET request:", err)
+		Log.Error(err, "Error making GET request to login status endpoint")
 		return false
 	}
 	defer response.Body.Close()
 	var result Response[IsLoggedIn]
 	if err := json.NewDecoder(response.Body).Decode(&result); err != nil {
+		Log.Error(err, "Error decoding response for login status")
 		return false
 	}
 	if result.ErrorCode != 0 {
+		Log.Error(nil, "API error: %s (code %d)", result.Message, result.ErrorCode)
 		return false
 	}
 
@@ -167,9 +173,10 @@ func (c *WebClient) setAuthorizationHeader(req *http.Request) error {
 
 func (c *WebClient) getHttpClient() (*http.Client, error) {
 	if !c.isLoggedIn() {
+		Log.Warn("WebAPI client is not logged in, re-logging in")
 		err := c.Login()
 		if err != nil {
-			return nil, fmt.Errorf("failed to log in: %w", err)
+			return nil, Log.Error(err, "Failed to re-login to Omada controller WebUI")
 		}
 	}
 

@@ -9,10 +9,13 @@ type Port interface {
 	GetPortDuplex() float64
 	GetPortIP() string
 	GetPortMode() string
-	GetPortProtocol() string
 
 	GetTxBytes() float64
 	GetRxBytes() float64
+
+	// Getters for specific port properties
+	GetInternetState() float64
+	GetPortProtocol() string
 }
 
 func ConvertToPortInterface[T Port](portsToConvert []T) []Port {

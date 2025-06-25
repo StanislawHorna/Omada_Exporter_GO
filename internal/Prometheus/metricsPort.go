@@ -59,6 +59,16 @@ var (
 		},
 		append(portIdentityLabels, portInfoLabels...),
 	)
+
+	port_internet_state = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "port_internet_state",
+			Help: fmt.Sprintf("Internet state of the port, for WAN ports of the router only (%s)",
+				Enum.GetInternetStatePossibleValues(),
+			),
+		},
+		portIdentityLabels,
+	)
 )
 
 func ExposePortMetrics(devices []Interface.Device) {
@@ -71,6 +81,11 @@ func ExposePortMetrics(devices []Interface.Device) {
 
 			port_speed.With(labels).Set(p.GetPortSpeed())
 			port_duplex.With(labels).Set(p.GetPortDuplex())
+
+			if d.GetType() == Enum.DeviceType_Gateway.String() {
+				port_internet_state.With(labels).Set(p.GetInternetState())
+			}
+
 			setPortInfo(p, labels)
 		}
 	}

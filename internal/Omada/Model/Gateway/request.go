@@ -1,8 +1,7 @@
 package Gateway
 
 import (
-	"fmt"
-
+	"omada_exporter_go/internal/Log"
 	"omada_exporter_go/internal/Omada/Enum"
 	"omada_exporter_go/internal/Omada/HttpClient/ApiClient"
 	"omada_exporter_go/internal/Omada/HttpClient/WebClient"
@@ -10,7 +9,7 @@ import (
 )
 
 func Get(devices []Devices.Device) (*[]Gateway, error) {
-
+	Log.Debug("Fetching gateways data")
 	var allData []Gateway
 
 	for _, d := range devices {
@@ -19,12 +18,12 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 		}
 		openApiResult, err := getOpenApiData(d)
 		if err != nil {
-			return nil, err
+			return nil, Log.Error(err, "Failed to get OpenAPI data for gateway %s", d.MacAddress)
 		}
 
 		webApiResult, err := getWebApiData(d)
 		if err != nil {
-			return nil, err
+			return nil, Log.Error(err, "Failed to get WebAPI data for gateway %s", d.MacAddress)
 		}
 
 		// reference to slice index 0, since we expect only one gateway per MAC address
@@ -35,7 +34,7 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 			for _, webPort := range (*webApiResult).PortStats {
 				if (*openApiResult)[0].PortList[i].Port == webPort.Port {
 					if err := (*openApiResult)[0].PortList[i].merge(webPort); err != nil {
-						fmt.Printf("Error merging port data for gateway %s: %v\n", d.MacAddress, err)
+						Log.Error(err, "Failed to merge port data for gateway %s", d.MacAddress)
 					}
 					// If port is down set speed and duplex as disabled
 					if (*openApiResult)[0].PortList[i].LinkStatus == Enum.LinkStatus_Down {
@@ -62,6 +61,8 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 		allData = append(allData, *openApiResult...)
 	}
 
+	Log.Info("Fetched %d gateways", len(allData))
+
 	return &allData, nil
 }
 
@@ -74,6 +75,7 @@ func getOpenApiData(d Devices.Device) (*[]Gateway, error) {
 	}
 
 	if len(*result) == 0 {
+		Log.Warn("No gateway data in OpenAPI found for device %s", d.MacAddress)
 		return nil, nil
 	}
 
@@ -93,6 +95,7 @@ func getWebApiData(d Devices.Device) (*rawGateway, error) {
 	}
 
 	if len((*result).PortStats) == 0 {
+		Log.Warn("No gateway data in WebAPI found for device %s", d.MacAddress)
 		return nil, nil
 	}
 

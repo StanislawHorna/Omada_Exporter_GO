@@ -59,6 +59,10 @@ func (sp SwitchPort) GetPortMode() string {
 	// Switch ports do not have a specific mode, return empty string
 	return Enum.NotApplicable_String
 }
+func (sp SwitchPort) GetInternetState() float64 {
+	// Switch ports do not have an internet state, return NotApplicable
+	return Enum.NotApplicable_Float
+}
 func (sp *SwitchPort) merge(toMerge webApiSwitchPort) error {
 	if sp.Port != toMerge.Port {
 		return fmt.Errorf("cannot merge SwitchPort with different port numbers: %d != %d", sp.Port, toMerge.Port)

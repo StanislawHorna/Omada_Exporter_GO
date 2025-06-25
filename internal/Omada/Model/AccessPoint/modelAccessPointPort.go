@@ -43,3 +43,7 @@ func (app AccessPointPort) GetPortMode() string {
 	// Access Point ports do not have a specific mode, return empty string
 	return Enum.NotApplicable_String
 }
+func (app AccessPointPort) GetInternetState() float64 {
+	// Access Point do not have an internet state, return NotApplicable
+	return Enum.NotApplicable_Float
+}

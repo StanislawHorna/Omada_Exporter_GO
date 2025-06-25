@@ -8,8 +8,9 @@ import (
 	"sync"
 
 	"omada_exporter_go/internal"
+	"omada_exporter_go/internal/Log"
 	"omada_exporter_go/internal/Omada/HttpClient/Utils"
-	Model "omada_exporter_go/internal/Omada/Model"
+	"omada_exporter_go/internal/Omada/Model"
 )
 
 const API_INFO_PATH = "/api/info"
@@ -26,7 +27,7 @@ type ApiClient struct {
 func (c *ApiClient) setAuthorizationHeader(req *http.Request) error {
 	token, err := c.auth.GetAccessToken()
 	if err != nil {
-		return fmt.Errorf("error getting access token: %s", err)
+		return Log.Error(err, "Failed to get access token")
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("AccessToken=%s", token))
 	return nil
@@ -91,7 +92,7 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 
 	_, err = apiClientObject.GetApiInfo()
 	if err != nil {
-		fmt.Println("Error fetching API info:", err)
+		Log.Error(err, "Failed to fetch API info")
 		return nil
 	}
 
@@ -104,7 +105,7 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 		},
 	)
 	if err != nil {
-		fmt.Println("Error creating access token:", err)
+		Log.Error(err, "Failed to create access token")
 		return nil
 	}
 
@@ -113,7 +114,7 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 	res, err := Get[Model.Sites](*apiClientObject, endpoint, map[string]string{"omadaID": apiClientObject.OmadaID}, nil, true)
 
 	if err != nil {
-		fmt.Println("Error fetching sites:", err)
+		Log.Error(err, "Failed to fetch sites")
 		return nil
 	}
 
@@ -123,7 +124,7 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 			break
 		}
 	}
-
+	Log.Info("New OpenAPI client created. URL: %s, Site: %s", apiClientObject.BaseURL, apiClientObject.SiteName)
 	return apiClientObject
 }
 

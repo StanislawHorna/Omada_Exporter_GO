@@ -76,6 +76,9 @@ func (gp GatewayPort) GetPortProtocol() string {
 	}
 	return gp.Protocol
 }
+func (gp GatewayPort) GetInternetState() float64 {
+	return float64(gp.InternetState.Int())
+}
 func (gp *GatewayPort) merge(toMerge webApiGatewayPort) error {
 	if gp.Port != toMerge.Port {
 		return fmt.Errorf("cannot merge GatewayPort with different port numbers: %d != %d", gp.Port, toMerge.Port)
