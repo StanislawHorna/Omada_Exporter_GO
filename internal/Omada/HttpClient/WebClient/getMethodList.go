@@ -9,7 +9,7 @@ import (
 	"omada_exporter_go/internal/Omada/HttpClient/Utils"
 )
 
-func GetList[T any](client WebClient, endpoint string, endpointPlaceholders map[string]string, queryParams map[string]string, usePagination bool) (*[]T, error) {
+func GetList[T any](client *WebClient, endpoint string, endpointPlaceholders map[string]string, queryParams map[string]string, usePagination bool) (*[]T, error) {
 	endpointPlaceholders = client.fillInOmadaIDs(endpointPlaceholders)
 	endpoint = Utils.FillInEndpointPlaceholders(endpoint, endpointPlaceholders)
 

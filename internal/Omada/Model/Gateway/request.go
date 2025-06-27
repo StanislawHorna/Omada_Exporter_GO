@@ -69,7 +69,7 @@ func Get(devices []Devices.Device) (*[]Gateway, error) {
 func getOpenApiData(d Devices.Device) (*[]Gateway, error) {
 	client := ApiClient.GetInstance()
 
-	result, err := ApiClient.Get[Gateway](*client, path_OpenApiGateway, map[string]string{"gatewayMac": d.MacAddress}, nil, false)
+	result, err := ApiClient.Get[Gateway](client, path_OpenApiGateway, map[string]string{"gatewayMac": d.MacAddress}, nil, false)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func getOpenApiData(d Devices.Device) (*[]Gateway, error) {
 func getWebApiData(d Devices.Device) (*rawGateway, error) {
 	client := WebClient.GetInstance()
 
-	result, err := WebClient.GetObject[rawGateway](*client, path_WebApiGatewayPort, map[string]string{"gatewayMac": d.MacAddress}, nil)
+	result, err := WebClient.GetObject[rawGateway](client, path_WebApiGatewayPort, map[string]string{"gatewayMac": d.MacAddress}, nil)
 	if err != nil {
 		return nil, err
 	}

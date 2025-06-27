@@ -9,7 +9,7 @@ func Get() (*[]Device, error) {
 	Log.Debug("Fetching generic devices data")
 	client := ApiClient.GetInstance()
 
-	result, err := ApiClient.Get[Device](*client, path_OpenApiDevicesList, nil, nil, true)
+	result, err := ApiClient.Get[Device](client, path_OpenApiDevicesList, nil, nil, true)
 	if err != nil {
 		return nil, Log.Error(err, "Failed to get devices data")
 	}

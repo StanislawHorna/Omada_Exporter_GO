@@ -56,7 +56,7 @@ func Get(devices []Devices.Device) (*[]Switch, error) {
 func getOpenApiData(d Devices.Device) (*[]Switch, error) {
 	client := ApiClient.GetInstance()
 
-	result, err := ApiClient.Get[Switch](*client, path_OpenApiSwitch, map[string]string{"switchMac": d.MacAddress}, nil, false)
+	result, err := ApiClient.Get[Switch](client, path_OpenApiSwitch, map[string]string{"switchMac": d.MacAddress}, nil, false)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func getOpenApiData(d Devices.Device) (*[]Switch, error) {
 func getWebApiData(d Devices.Device) (*[]webApiSwitchPort, error) {
 	client := WebClient.GetInstance()
 
-	result, err := WebClient.GetList[webApiSwitchPort](*client, path_WebApiSwitchPort, map[string]string{"switchMac": d.MacAddress}, nil, false)
+	result, err := WebClient.GetList[webApiSwitchPort](client, path_WebApiSwitchPort, map[string]string{"switchMac": d.MacAddress}, nil, false)
 	if err != nil {
 		return nil, err
 	}

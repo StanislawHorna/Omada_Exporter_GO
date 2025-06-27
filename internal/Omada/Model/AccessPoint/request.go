@@ -18,7 +18,7 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 		if d.Type != Enum.DeviceType_AccessPoint {
 			continue
 		}
-		result, err := ApiClient.Get[AccessPoint](*client, path_OpenApiAccessPoint, map[string]string{"apMac": d.MacAddress}, nil, false)
+		result, err := ApiClient.Get[AccessPoint](client, path_OpenApiAccessPoint, map[string]string{"apMac": d.MacAddress}, nil, false)
 		if err != nil {
 			return nil, Log.Error(err, "Failed to get access point data for AP %s", d.MacAddress)
 		}
@@ -51,7 +51,7 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 func getWebApiData(d Devices.Device) (*webApiAccessPoint, error) {
 	client := WebClient.GetInstance()
 
-	result, err := WebClient.GetObject[webApiAccessPoint](*client, path_WebApiAccessPointPort, map[string]string{"apMac": d.MacAddress}, nil)
+	result, err := WebClient.GetObject[webApiAccessPoint](client, path_WebApiAccessPointPort, map[string]string{"apMac": d.MacAddress}, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func getWebApiData(d Devices.Device) (*webApiAccessPoint, error) {
 func getOpenApiRadioData(ap *AccessPoint) error {
 	client := ApiClient.GetInstance()
 
-	result, err := ApiClient.Get[rawAccessPointRadio](*client, path_OpenApiAccessPointRadio, map[string]string{"apMac": ap.MacAddress}, nil, false)
+	result, err := ApiClient.Get[rawAccessPointRadio](client, path_OpenApiAccessPointRadio, map[string]string{"apMac": ap.MacAddress}, nil, false)
 	if err != nil {
 		return Log.Error(err, "Failed to get access point radio data for AP %s", ap.MacAddress)
 	}

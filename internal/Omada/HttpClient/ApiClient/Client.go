@@ -111,7 +111,7 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 
 	endpoint := Utils.FillInEndpointPlaceholders(Model.PATH_SITES, map[string]string{"omadaID": apiClientObject.OmadaID})
 
-	res, err := Get[Model.Sites](*apiClientObject, endpoint, map[string]string{"omadaID": apiClientObject.OmadaID}, nil, true)
+	res, err := Get[Model.Sites](apiClientObject, endpoint, map[string]string{"omadaID": apiClientObject.OmadaID}, nil, true)
 
 	if err != nil {
 		Log.Error(err, "Failed to fetch sites")

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"sync"
+	"time"
 
 	"omada_exporter_go/internal"
 	"omada_exporter_go/internal/Log"
@@ -16,20 +17,24 @@ import (
 )
 
 const (
-	path_login        = "/{omadaID}/api/v2/login"
-	path_logout       = "/{omadaID}/api/v2/logout"
-	path_login_status = "/{omadaID}/api/v2/loginStatus"
+	path_login       = "/{omadaID}/api/v2/login"
+	path_logout      = "/{omadaID}/api/v2/logout"
+	path_loginStatus = "/{omadaID}/api/v2/loginStatus"
+
+	threshold_loginCheck int64 = 10
 )
 
 type WebClient struct {
-	BaseURL  string
-	OmadaID  string
-	username string
-	password string
-	SiteID   string
-	SiteName string
-	Client   *http.Client
-	Token    string
+	BaseURL            string
+	OmadaID            string
+	username           string
+	password           string
+	SiteID             string
+	SiteName           string
+	Client             *http.Client
+	Token              string
+	lastLoginTime      int64
+	lastLoginCheckTime int64
 }
 
 func (w *WebClient) fillInOmadaIDs(placeholders map[string]string) map[string]string {
@@ -119,12 +124,19 @@ func (c *WebClient) Login() error {
 	}
 
 	Log.Info("Logged in successfully to Omada controller WebUI. URL: %s, Site: %s", c.BaseURL, c.SiteName)
+	c.lastLoginTime = time.Now().Unix()
 	c.Token = loginResponse.Result.Token
 	return nil
 }
 
 func (c *WebClient) isLoggedIn() bool {
-	endpoint := Utils.FillInEndpointPlaceholders(path_login_status, c.fillInOmadaIDs(nil))
+	if c.lastLoginCheckTime > 0 && ((time.Now().Unix() - c.lastLoginCheckTime) <= threshold_loginCheck) {
+		Log.Debug("Last logged in check performed in less than %d seconds, returning true", threshold_loginCheck)
+		return true
+	}
+	c.lastLoginCheckTime = time.Now().Unix()
+
+	endpoint := Utils.FillInEndpointPlaceholders(path_loginStatus, c.fillInOmadaIDs(nil))
 	if endpoint == "" {
 		Log.Error(nil, "Endpoint cannot be empty")
 		return false
