@@ -20,6 +20,9 @@ func CollectMetrics() error {
 
 	switches, err := Switch.Get(*deviceList)
 	if err == nil {
+		for i := range *switches {
+			(*switches)[i].AppendGeneralProperties(deviceList)
+		}
 		Interface.AppendDevicesSlice(&omadaDevices, *switches)
 	} else {
 		fmt.Println("failed to get switches: %w", err)
@@ -27,6 +30,9 @@ func CollectMetrics() error {
 
 	gateways, err := Gateway.Get(*deviceList)
 	if err == nil {
+		for i := range *gateways {
+			(*gateways)[i].AppendGeneralProperties(deviceList)
+		}
 		Interface.AppendDevicesSlice(&omadaDevices, *gateways)
 	} else {
 		fmt.Println("failed to get gateways: %w", err)
@@ -34,10 +40,14 @@ func CollectMetrics() error {
 
 	aps, err := AccessPoint.Get(*deviceList)
 	if err == nil {
+		for i := range *aps {
+			(*aps)[i].AppendGeneralProperties(deviceList)
+		}
 		Interface.AppendDevicesSlice(&omadaDevices, *aps)
 	} else {
 		fmt.Println("failed to get access points: %w", err)
 	}
+
 	ExposeDeviceMetrics(omadaDevices)
 	ExposePortMetrics(omadaDevices)
 	ExposeRadioMetrics(omadaDevices)

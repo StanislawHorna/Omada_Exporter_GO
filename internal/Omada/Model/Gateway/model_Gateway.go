@@ -1,7 +1,9 @@
 package Gateway
 
 import (
+	"omada_exporter_go/internal/Log"
 	"omada_exporter_go/internal/Omada/Enum"
+	"omada_exporter_go/internal/Omada/Model/Devices"
 	"omada_exporter_go/internal/Omada/Model/Interface"
 )
 
@@ -24,6 +26,19 @@ type Gateway struct {
 
 	// WebAPI fields
 	HardwareVersion string
+	ClientsCount    int64
+	UpgradeNeeded   Enum.UpgradeNeeded
+}
+
+func (g *Gateway) AppendGeneralProperties(devices *[]Devices.Device) {
+	for _, d := range *devices {
+		if g.MacAddress == d.MacAddress && g.DeviceType == d.Type {
+			g.ClientsCount = d.ClientNum
+			g.UpgradeNeeded = d.UpgradeNeeded
+			return
+		}
+	}
+	Log.Warn("Could not find appropriate device to append properties")
 }
 
 func (g Gateway) GetType() string {
@@ -65,4 +80,10 @@ func (g Gateway) GetPorts() []Interface.Port {
 func (g Gateway) GetRadios() []Interface.Radio {
 	// Gateways do not have radios
 	return nil
+}
+func (g Gateway) GetClientsCount() float64 {
+	return float64(g.ClientsCount)
+}
+func (g Gateway) GetUpgradeNeededStatus() float64 {
+	return g.UpgradeNeeded.Float()
 }

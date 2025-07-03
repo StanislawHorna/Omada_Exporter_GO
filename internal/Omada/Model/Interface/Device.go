@@ -1,6 +1,8 @@
 package Interface
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Device interface {
 	// Getters for device properties
@@ -18,6 +20,8 @@ type Device interface {
 
 	GetTemperature() float64 // Returns -1 if temperature is not available
 	GetLastSeen() float64    // Returns the last seen timestamp in milliseconds
+	GetClientsCount() float64
+	GetUpgradeNeededStatus() float64
 
 	// Getters for object associated with device
 	GetPorts() []Port

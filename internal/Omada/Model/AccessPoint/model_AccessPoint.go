@@ -1,7 +1,9 @@
 package AccessPoint
 
 import (
+	"omada_exporter_go/internal/Log"
 	"omada_exporter_go/internal/Omada/Enum"
+	"omada_exporter_go/internal/Omada/Model/Devices"
 	"omada_exporter_go/internal/Omada/Model/Interface"
 )
 
@@ -31,8 +33,20 @@ type AccessPoint struct {
 	// WebAPI fields
 	PortList        []AccessPointPort
 	HardwareVersion string
+	ClientsCount    int64
+	UpgradeNeeded   Enum.UpgradeNeeded
 }
 
+func (ap *AccessPoint) AppendGeneralProperties(devices *[]Devices.Device) {
+	for _, d := range *devices {
+		if ap.MacAddress == d.MacAddress && ap.DeviceType == d.Type {
+			ap.ClientsCount = d.ClientNum
+			ap.UpgradeNeeded = d.UpgradeNeeded
+			return
+		}
+	}
+	Log.Warn("Could not find appropriate device to append properties")
+}
 func (ap AccessPoint) GetType() string {
 	return ap.DeviceType.String()
 }
@@ -73,7 +87,12 @@ func (ap AccessPoint) GetPorts() []Interface.Port {
 func (ap AccessPoint) GetRadios() []Interface.Radio {
 	return Interface.ConvertToRadioInterface(ap.RadioList)
 }
-
+func (ap AccessPoint) GetClientsCount() float64 {
+	return float64(ap.ClientsCount)
+}
+func (ap AccessPoint) GetUpgradeNeededStatus() float64 {
+	return ap.UpgradeNeeded.Float()
+}
 func (ap *AccessPoint) merge(toMerge *webApiAccessPoint) {
 	ap.HardwareVersion = toMerge.HardwareVersion
 	ap.PortList = make([]AccessPointPort, 1)

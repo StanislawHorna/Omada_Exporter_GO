@@ -1,6 +1,8 @@
 package Prometheus
 
 import (
+	"fmt"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 
@@ -59,6 +61,24 @@ var (
 		},
 		deviceIdentityLabels,
 	)
+
+	device_upgrade_needed = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "device_upgrade_needed",
+			Help: fmt.Sprintf("The bool value whether there are any upgrades to install (%s)",
+				Enum.GetUpgradeNeededPossibleValues(),
+			),
+		},
+		deviceIdentityLabels,
+	)
+
+	device_clients_count = promauto.With(omadaRegistry).NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "device_clients_count",
+			Help: "Number of clients connected to device",
+		},
+		deviceIdentityLabels,
+	)
 )
 
 func ExposeDeviceMetrics(devices []Interface.Device) {
@@ -68,6 +88,9 @@ func ExposeDeviceMetrics(devices []Interface.Device) {
 		cpu_usage.With(identityLabels).Set(d.GetCpuUsage())
 		memory_usage.With(identityLabels).Set(d.GetMemUsage())
 		device_last_seen.With(identityLabels).Set(d.GetLastSeen())
+
+		device_clients_count.With(identityLabels).Set(d.GetClientsCount())
+		device_upgrade_needed.With(identityLabels).Set(d.GetUpgradeNeededStatus())
 
 		setDeviceTemperature(d, identityLabels)
 		setDeviceInfo(d, identityLabels)
