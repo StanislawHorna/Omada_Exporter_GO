@@ -1,0 +1,48 @@
+name: Build container
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**.go"
+      - "**.mod"
+      - "**.sum"
+      - "Dockerfile"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  Release:
+    runs-on: ubuntu-latest
+    outputs:
+      docker-image-name: ${{ steps.docker-image.outputs.name }}
+      version: ${{ steps.release.outputs.tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Release
+        id: release
+        uses: StanislawHornaGitHub/GitHub_Release/create-release@main
+        with:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Docker Image name
+        id: docker-image
+        uses: StanislawHornaGitHub/Docker/get-repo-name@main
+
+  Build:
+    uses: StanislawHornaGitHub/Docker/.github/workflows/build-docker-image.yml@main
+    needs: Release
+    with:
+      image-name: ${{ needs.Release.outputs.docker-image-name }}
+      image-version: ${{ needs.Release.outputs.version }}
+    secrets:
+      TS_OAUTH_CLIENT_ID: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+      TS_OAUTH_SECRET: ${{ secrets.TS_OAUTH_SECRET }}
+      VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
+      VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}

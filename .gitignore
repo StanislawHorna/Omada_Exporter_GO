@@ -31,5 +31,5 @@ go.work.sum
 # .idea/
 # .vscode/
 .vscode
-
+.DS_Store
 /dev
