@@ -35,8 +35,8 @@ type webApiGatewayPort struct {
 	Online            Enum.RouterUpstreamState  `json:"onlineDetection"`
 	LinkSpeed         Enum.LinkSpeed            `json:"speed"`
 	Duplex            Enum.DuplexMode           `json:"duplex"`
-	TxBytes           int64                     `json:"tx"`
-	RxBytes           int64                     `json:"rx"`
+	Tx                int64                     `json:"tx"`
+	Rx                int64                     `json:"rx"`
 	TxPackets         int64                     `json:"txPkt"`
 	RxPackets         int64                     `json:"rxPkt"`
 	Protocol          string                    `json:"proto"`

@@ -109,14 +109,16 @@ func (gp *GatewayPort) merge(toMerge webApiGatewayPort) error {
 	gp.Online = toMerge.Online
 	gp.LinkSpeed = toMerge.LinkSpeed
 	gp.DuplexMode = toMerge.Duplex
-	gp.ReceiveBytes = toMerge.RxBytes
-	gp.TransmitBytes = toMerge.TxBytes
 	gp.ReceivePackets = toMerge.RxPackets
 	gp.TransmitPackets = toMerge.TxPackets
 	gp.Latency = toMerge.Latency
 	gp.Loss = toMerge.Loss
 	gp.IPv4Config = toMerge.WanPortIpv4Config
 	gp.IPv6Config = toMerge.WanPortIpv6Config
+
+	// Omada webAPI for some reason returns port tx and rx in bits not bytes
+	gp.ReceiveBytes = toMerge.Rx / 8
+	gp.TransmitBytes = toMerge.Tx / 8
 
 	return nil
 }
