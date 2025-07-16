@@ -83,8 +83,10 @@ func (sp *SwitchPort) merge(toMerge webApiSwitchPort) error {
 	sp.MaxLinkSpeed = toMerge.MaxLinkSpeed
 	sp.DuplexMode = toMerge.PortStatus.Duplex
 	sp.Poe = toMerge.PortStatus.Poe
-	sp.ReceiveBytes = toMerge.PortStatus.Receive
-	sp.TransmitBytes = toMerge.PortStatus.Transmit
+
+	// Omada webAPI for some reason returns port tx and rx in bits not bytes
+	sp.ReceiveBytes = toMerge.PortStatus.Receive / 8
+	sp.TransmitBytes = toMerge.PortStatus.Transmit / 8
 
 	return nil
 }
