@@ -85,8 +85,8 @@ func (sp *SwitchPort) merge(toMerge webApiSwitchPort) error {
 	sp.Poe = toMerge.PortStatus.Poe
 
 	// Omada webAPI for some reason returns port tx and rx in bits not bytes
-	sp.ReceiveBytes = toMerge.PortStatus.Receive / 8
-	sp.TransmitBytes = toMerge.PortStatus.Transmit / 8
+	sp.ReceiveBytes = toMerge.PortStatus.Receive
+	sp.TransmitBytes = toMerge.PortStatus.Transmit
 
 	return nil
 }
