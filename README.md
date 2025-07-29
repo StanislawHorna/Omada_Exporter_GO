@@ -31,8 +31,12 @@ Supports both Omada OpenAPI and Web API to accommodate current platform limitati
 
 ### Prerequisites
 
-- Omada Controller with configured OpenAPI Client and Service user account, details [here](#omada-authentication-setup)
--
+- **Omada Controller** with configured:
+  - [**OpenAPI Client**](#omada-authentication-setup)
+  - [**Service user account**](#omada-authentication-setup)
+- **Prometheus** (or another metrics scraper) to collect and store the metrics
+- **Grafana** to visualize the data using built-in dashboards
+- (Optional) **Grafana Loki** if you want to collect and view logs from the exporter
 
 ### Setup
 
