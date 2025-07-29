@@ -19,6 +19,8 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 			continue
 		}
 		result, err := ApiClient.Get[AccessPoint](client, path_OpenApiAccessPoint, map[string]string{"apMac": d.MacAddress}, nil, false)
+		// If OpenAPI data is not available,
+		// return error because OpenAPI data is base information, completed with WebAPI data
 		if err != nil {
 			return nil, Log.Error(err, "Failed to get access point data for AP %s", d.MacAddress)
 		}
@@ -31,12 +33,13 @@ func Get(devices []Devices.Device) (*[]AccessPoint, error) {
 
 			webApiData, err := getWebApiData(d)
 			if err != nil {
-				return nil, Log.Error(err, "Failed to get web API data for AP %s", d.MacAddress)
+				Log.Error(err, "Failed to get web API data for AP %s", d.MacAddress)
+			} else {
+				(*result)[i].merge(webApiData)
 			}
-			(*result)[i].merge(webApiData)
 
 			if err := getOpenApiRadioData(&(*result)[i]); err != nil {
-				return nil, Log.Error(err, "Failed to get radio data for AP %s", d.MacAddress)
+				Log.Error(err, "Failed to get radio data for AP %s", d.MacAddress)
 			}
 		}
 

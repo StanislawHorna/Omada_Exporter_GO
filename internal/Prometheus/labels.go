@@ -19,8 +19,6 @@ var portIdentityLabels = []string{label_deviceType, label_macAddress, label_port
 
 var radioIdentityLabels = []string{label_deviceType, label_macAddress, label_radioFrequency}
 
-var omadaRegistry = prometheus.NewRegistry()
-
 func getDeviceIdentityLabels(device Interface.Device) prometheus.Labels {
 	return prometheus.Labels{
 		label_deviceType: device.GetType(),

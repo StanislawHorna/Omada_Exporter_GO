@@ -2,6 +2,10 @@ package Prometheus
 
 import (
 	"fmt"
+	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 
 	"omada_exporter_go/internal/Omada/Model/AccessPoint"
 	"omada_exporter_go/internal/Omada/Model/Devices"
@@ -10,7 +14,17 @@ import (
 	"omada_exporter_go/internal/Omada/Model/Switch"
 )
 
+var (
+	omada_scrape_duration = promauto.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "omada_scrape_duration",
+			Help: "The amount of time it took to scrape the Omada controller in seconds",
+		},
+	)
+)
+
 func CollectMetrics() error {
+	start := time.Now()
 	deviceList, err := Devices.Get()
 	if err != nil {
 		return err
@@ -47,9 +61,10 @@ func CollectMetrics() error {
 	} else {
 		fmt.Println("failed to get access points: %w", err)
 	}
+	omada_scrape_duration.Set(time.Since(start).Seconds())
 
 	ExposeDeviceMetrics(omadaDevices)
 	ExposePortMetrics(omadaDevices)
 	ExposeRadioMetrics(omadaDevices)
-	return nil
+	return err
 }

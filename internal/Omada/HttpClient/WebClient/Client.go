@@ -13,6 +13,7 @@ import (
 	"omada_exporter_go/internal"
 	"omada_exporter_go/internal/Log"
 	"omada_exporter_go/internal/Omada/HttpClient/ApiClient"
+	"omada_exporter_go/internal/Omada/HttpClient/ClientInstrumentation"
 	"omada_exporter_go/internal/Omada/HttpClient/Utils"
 )
 
@@ -56,6 +57,12 @@ func newClient(baseURL string, username string, password string, siteName string
 	customTransport := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
+
+	instrumentedTransport := &ClientInstrumentation.InstrumentedRoundTripper{
+		RoundTripper: customTransport,
+		ClientType:   ClientInstrumentation.WebApiClientType,
+	}
+
 	openApiClient := ApiClient.GetInstance()
 
 	clientObject := &WebClient{
@@ -68,14 +75,14 @@ func newClient(baseURL string, username string, password string, siteName string
 
 		Client: &http.Client{
 			Jar:       jar,
-			Transport: customTransport,
+			Transport: instrumentedTransport,
 		},
 	}
 	clientObject.Login()
 
 	if !clientObject.isLoggedIn() {
 		Log.Error(nil, "Failed to log in to Omada controller WebUI")
-		return nil
+		return clientObject
 	}
 
 	Log.Info("New WebAPI client created. URL: %s, Site: %s", baseURL, siteName)

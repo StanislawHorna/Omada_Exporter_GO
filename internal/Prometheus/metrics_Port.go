@@ -21,28 +21,28 @@ const (
 var portInfoLabels = []string{label_portName, label_portIP, label_portProtocol, label_portMode}
 
 var (
-	port_rx_bytes_total = promauto.With(omadaRegistry).NewGaugeVec(
+	port_rx_bytes_total = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_rx_bytes_total",
 			Help: "Total number of bytes received on the port",
 		},
 		portIdentityLabels,
 	)
-	port_tx_bytes_total = promauto.With(omadaRegistry).NewGaugeVec(
+	port_tx_bytes_total = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_tx_bytes_total",
 			Help: "Total number of bytes transmitted on the port",
 		},
 		portIdentityLabels,
 	)
-	port_speed = promauto.With(omadaRegistry).NewGaugeVec(
+	port_speed = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_speed",
 			Help: "Speed of the port in bits per second",
 		},
 		portIdentityLabels,
 	)
-	port_duplex = promauto.With(omadaRegistry).NewGaugeVec(
+	port_duplex = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_duplex",
 			Help: fmt.Sprintf(
@@ -52,14 +52,14 @@ var (
 		},
 		portIdentityLabels,
 	)
-	port_info = promauto.With(omadaRegistry).NewGaugeVec(
+	port_info = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_info",
 			Help: "Information about port of the device",
 		},
 		append(portIdentityLabels, portInfoLabels...),
 	)
-	port_upstream_state = promauto.With(omadaRegistry).NewGaugeVec(
+	port_upstream_state = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_upstream_state",
 			Help: fmt.Sprintf("Router port upstream state (%s)",
@@ -68,7 +68,7 @@ var (
 		},
 		portIdentityLabels,
 	)
-	port_internet_state = promauto.With(omadaRegistry).NewGaugeVec(
+	port_internet_state = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_internet_state",
 			Help: fmt.Sprintf("Router port Internet state (%s)",
@@ -77,14 +77,14 @@ var (
 		},
 		portIdentityLabels,
 	)
-	port_internet_latency = promauto.With(omadaRegistry).NewGaugeVec(
+	port_internet_latency = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_internet_latency",
 			Help: "Router port Internet latency in milliseconds",
 		},
 		portIdentityLabels,
 	)
-	port_internet_loss = promauto.With(omadaRegistry).NewGaugeVec(
+	port_internet_loss = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "port_internet_loss",
 			Help: "Router port Internet loss in percentage (0 - 100)",

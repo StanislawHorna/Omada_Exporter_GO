@@ -9,6 +9,6 @@ import (
 func OmadaMetricsHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		CollectMetrics()
-		promhttp.HandlerFor(omadaRegistry, promhttp.HandlerOpts{}).ServeHTTP(w, r)
+		promhttp.Handler().ServeHTTP(w, r)
 	})
 }

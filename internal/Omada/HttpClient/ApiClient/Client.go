@@ -9,6 +9,7 @@ import (
 
 	"omada_exporter_go/internal"
 	"omada_exporter_go/internal/Log"
+	"omada_exporter_go/internal/Omada/HttpClient/ClientInstrumentation"
 	"omada_exporter_go/internal/Omada/HttpClient/Utils"
 	"omada_exporter_go/internal/Omada/Model"
 )
@@ -82,10 +83,15 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 
+	instrumentedTransport := &ClientInstrumentation.InstrumentedRoundTripper{
+		RoundTripper: customTransport,
+		ClientType:   ClientInstrumentation.OpenApiClientType,
+	}
+
 	apiClientObject := &ApiClient{
 		BaseURL:  BaseURL,
 		SiteName: SiteName,
-		Http:     &http.Client{Transport: customTransport},
+		Http:     &http.Client{Transport: instrumentedTransport},
 	}
 
 	var err error
@@ -93,7 +99,7 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 	_, err = apiClientObject.GetApiInfo()
 	if err != nil {
 		Log.Error(err, "Failed to fetch API info")
-		return nil
+		return apiClientObject
 	}
 
 	apiClientObject.auth, err = NewAccessToken(
@@ -106,7 +112,7 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 	)
 	if err != nil {
 		Log.Error(err, "Failed to create access token")
-		return nil
+		return apiClientObject
 	}
 
 	endpoint := Utils.FillInEndpointPlaceholders(Model.PATH_SITES, map[string]string{"omadaID": apiClientObject.OmadaID})
@@ -115,7 +121,7 @@ func newClient(BaseURL string, ClientID string, ClientSecret string, SiteName st
 
 	if err != nil {
 		Log.Error(err, "Failed to fetch sites")
-		return nil
+		return apiClientObject
 	}
 
 	for _, site := range *res {

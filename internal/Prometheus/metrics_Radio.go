@@ -17,14 +17,14 @@ const (
 var radioInfoLabels = []string{label_channel, label_bandwidth, label_mode}
 
 var (
-	radio_tx_bytes_total = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_tx_bytes_total = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_tx_bytes_total",
 			Help: "Total number of bytes transmitted on the radio",
 		},
 		radioIdentityLabels,
 	)
-	radio_rx_bytes_total = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_rx_bytes_total = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_rx_bytes_total",
 			Help: "Total number of bytes received on the radio",
@@ -32,42 +32,42 @@ var (
 		radioIdentityLabels,
 	)
 
-	radio_rx_drop_packets_total = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_rx_drop_packets_total = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_rx_drop_packets_total",
 			Help: "Total number of Rx packets dropped on the radio",
 		},
 		radioIdentityLabels,
 	)
-	radio_tx_drop_packets_total = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_tx_drop_packets_total = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_tx_drop_packets_total",
 			Help: "Total number of Tx packets dropped on the radio",
 		},
 		radioIdentityLabels,
 	)
-	radio_rx_err_packets_total = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_rx_err_packets_total = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_rx_err_packets_total",
 			Help: "Total number of Rx packets with error on the radio",
 		},
 		radioIdentityLabels,
 	)
-	radio_tx_err_packets_total = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_tx_err_packets_total = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_tx_err_packets_total",
 			Help: "Total number of Tx packets with errors on the radio",
 		},
 		radioIdentityLabels,
 	)
-	radio_rx_retry_packets_total = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_rx_retry_packets_total = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_rx_retry_packets_total",
 			Help: "Total number of Rx packets retried on the radio",
 		},
 		radioIdentityLabels,
 	)
-	radio_tx_retry_packets_total = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_tx_retry_packets_total = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_tx_retry_packets_total",
 			Help: "Total number of Tx packets retried on the radio",
@@ -75,35 +75,35 @@ var (
 		radioIdentityLabels,
 	)
 
-	radio_tx_usage = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_tx_usage = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_tx_usage",
 			Help: "Radio TX channel usage in percentage (0 - 100)",
 		},
 		radioIdentityLabels,
 	)
-	radio_rx_usage = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_rx_usage = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_rx_usage",
 			Help: "Radio RX channel usage in percentage (0 - 100)",
 		},
 		radioIdentityLabels,
 	)
-	radio_interference = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_interference = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_interference",
 			Help: "Information about radio interface of the device",
 		},
 		radioIdentityLabels,
 	)
-	radio_max_tx_rate = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_max_tx_rate = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_max_tx_rate",
 			Help: "Maximum transmission rate of the radio in bits per second",
 		},
 		radioIdentityLabels,
 	)
-	radio_info = promauto.With(omadaRegistry).NewGaugeVec(
+	radio_info = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "radio_info",
 			Help: "Information about radio interface of the device",

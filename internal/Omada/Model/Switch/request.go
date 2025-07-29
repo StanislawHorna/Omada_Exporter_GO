@@ -18,31 +18,32 @@ func Get(devices []Devices.Device) (*[]Switch, error) {
 		}
 
 		openApiResult, err := getOpenApiData(d)
+		// If OpenAPI data is not available,
+		// return error because OpenAPI data is base information, completed with WebAPI data
 		if err != nil {
 			return nil, Log.Error(err, "Failed to get OpenAPI data for switch %s", d.MacAddress)
 		}
 
 		webApiResult, err := getWebApiData(d)
 		if err != nil {
-			return nil, Log.Error(err, "Failed to get WebAPI data for switch %s", d.MacAddress)
-		}
-
-		for i := range (*openApiResult)[0].PortList {
-			// Merge the web API data into the OpenAPI result
-			for _, webPort := range *webApiResult {
-				if (*openApiResult)[0].PortList[i].Port == webPort.Port {
-					if err := (*openApiResult)[0].PortList[i].merge(webPort); err != nil {
-						Log.Error(err, "Failed to merge port data for switch %s", d.MacAddress)
+			Log.Error(err, "Failed to get WebAPI data for switch %s", d.MacAddress)
+		} else {
+			for i := range (*openApiResult)[0].PortList {
+				// Merge the web API data into the OpenAPI result
+				for _, webPort := range *webApiResult {
+					if (*openApiResult)[0].PortList[i].Port == webPort.Port {
+						if err := (*openApiResult)[0].PortList[i].merge(webPort); err != nil {
+							Log.Error(err, "Failed to merge port data for switch %s", d.MacAddress)
+						}
+						// If port is down set speed and duplex as disabled
+						if (*openApiResult)[0].PortList[i].LinkStatus == Enum.LinkStatus_Down {
+							(*openApiResult)[0].PortList[i].LinkSpeed = Enum.LinkSpeed_Disabled
+							(*openApiResult)[0].PortList[i].DuplexMode = Enum.DuplexMode_Down
+						}
+						break
 					}
-					// If port is down set speed and duplex as disabled
-					if (*openApiResult)[0].PortList[i].LinkStatus == Enum.LinkStatus_Down {
-						(*openApiResult)[0].PortList[i].LinkSpeed = Enum.LinkSpeed_Disabled
-						(*openApiResult)[0].PortList[i].DuplexMode = Enum.DuplexMode_Down
-					}
-					break
 				}
 			}
-
 		}
 		allDataOpenApi = append(allDataOpenApi, *openApiResult...)
 

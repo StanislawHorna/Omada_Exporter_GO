@@ -22,7 +22,7 @@ const (
 var deviceInfoLabels = []string{label_deviceName, label_deviceModel, label_IP, label_deviceFirmware, label_HardwareVersion}
 
 var (
-	cpu_usage = promauto.With(omadaRegistry).NewGaugeVec(
+	cpu_usage = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "cpu_usage",
 			Help: "The percentage of CPU usage (0 - 100)",
@@ -30,7 +30,7 @@ var (
 		deviceIdentityLabels,
 	)
 
-	memory_usage = promauto.With(omadaRegistry).NewGaugeVec(
+	memory_usage = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "memory_usage",
 			Help: "The percentage of memory usage (0 - 100)",
@@ -38,7 +38,7 @@ var (
 		deviceIdentityLabels,
 	)
 
-	temperature = promauto.With(omadaRegistry).NewGaugeVec(
+	temperature = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "temperature",
 			Help: "The device temperature in degrees Celsius",
@@ -46,7 +46,7 @@ var (
 		deviceIdentityLabels,
 	)
 
-	device_info = promauto.With(omadaRegistry).NewGaugeVec(
+	device_info = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "device_info",
 			Help: "Information about the device",
@@ -54,7 +54,7 @@ var (
 		append(deviceIdentityLabels, deviceInfoLabels...),
 	)
 
-	device_last_seen = promauto.With(omadaRegistry).NewGaugeVec(
+	device_last_seen = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "device_last_seen",
 			Help: "The last time the device was seen, in Unix timestamp format",
@@ -62,7 +62,7 @@ var (
 		deviceIdentityLabels,
 	)
 
-	device_upgrade_needed = promauto.With(omadaRegistry).NewGaugeVec(
+	device_upgrade_needed = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "device_upgrade_needed",
 			Help: fmt.Sprintf("The bool value whether there are any upgrades to install (%s)",
@@ -72,7 +72,7 @@ var (
 		deviceIdentityLabels,
 	)
 
-	device_clients_count = promauto.With(omadaRegistry).NewGaugeVec(
+	device_clients_count = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "device_clients_count",
 			Help: "Number of clients connected to device",
