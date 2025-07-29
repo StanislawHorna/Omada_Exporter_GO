@@ -90,6 +90,11 @@ scrape_configs:
 
 6. Import dashboards from [`Dashboards`](/Dashboards/) directory to your Grafana instance.
 
+> [!TIP]
+> After starting up the exporter navigate to `http://"<docker_host_ip>:8080/metrics`
+> and check `omada_http_client_requests_total` metrics.
+> There should be **no** metrics with code different different than 200
+
 ### Omada Authentication Setup
 
 - OpenAPI Client – Created via: `Settings -> Platform Integration`.
