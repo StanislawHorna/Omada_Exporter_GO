@@ -27,16 +27,16 @@ jobs:
 
       - name: Create Release
         id: release
-        uses: StanislawHornaGitHub/GitHub_Release/create-release@main
+        uses: StanislawHorna/GitHub_Release/create-release@main
         with:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get Docker Image name
         id: docker-image
-        uses: StanislawHornaGitHub/Docker/get-repo-name@main
+        uses: StanislawHorna/Docker/get-repo-name@main
 
   Build:
-    uses: StanislawHornaGitHub/Docker/.github/workflows/build-docker-image.yml@main
+    uses: StanislawHorna/Docker/.github/workflows/build-docker-image.yml@main
     needs: Release
     with:
       image-name: ${{ needs.Release.outputs.docker-image-name }}
