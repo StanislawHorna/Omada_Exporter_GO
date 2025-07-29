@@ -1,0 +1,1108 @@
+{
+    "__inputs": [
+        {
+            "name": "DS_PROMETHEUS",
+            "label": "prometheus",
+            "description": "",
+            "type": "datasource",
+            "pluginId": "prometheus",
+            "pluginName": "Prometheus"
+        },
+        {
+            "name": "VAR_JOB_NAME",
+            "type": "constant",
+            "label": "job_name",
+            "value": "Omada",
+            "description": ""
+        },
+        {
+            "name": "VAR_RATE_INTERVAL",
+            "type": "constant",
+            "label": "rate_interval",
+            "value": "6m",
+            "description": ""
+        }
+    ],
+    "__elements": {},
+    "__requires": [
+        {
+            "type": "panel",
+            "id": "bargauge",
+            "name": "Bar gauge",
+            "version": ""
+        },
+        {
+            "type": "panel",
+            "id": "gauge",
+            "name": "Gauge",
+            "version": ""
+        },
+        {
+            "type": "grafana",
+            "id": "grafana",
+            "name": "Grafana",
+            "version": "12.0.1"
+        },
+        {
+            "type": "datasource",
+            "id": "prometheus",
+            "name": "Prometheus",
+            "version": "1.0.0"
+        },
+        {
+            "type": "panel",
+            "id": "stat",
+            "name": "Stat",
+            "version": ""
+        },
+        {
+            "type": "panel",
+            "id": "table",
+            "name": "Table",
+            "version": ""
+        }
+    ],
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+            }
+        ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "panels": [
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green"
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 5,
+                "w": 4,
+                "x": 0,
+                "y": 0
+            },
+            "id": 1,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum by (deviceType) (device_clients_count{job=\"$job_name\", deviceType!=\"Gateway\"}) > 0",
+                    "legendFormat": "{{deviceType}}",
+                    "range": true,
+                    "refId": "A"
+                }
+            ],
+            "title": "Clients count",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "continuous-RdYlGr"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green"
+                            }
+                        ]
+                    },
+                    "unit": "decbytes"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 5,
+                "w": 8,
+                "x": 4,
+                "y": 0
+            },
+            "id": 2,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "sum by (radioFrequency) (\n  abs(deriv(radio_rx_bytes_total[$rate_interval])) +\n  abs(deriv(radio_tx_bytes_total[$rate_interval]))\n) * $__range",
+                    "format": "time_series",
+                    "instant": false,
+                    "legendFormat": "{{radioFrequency}}",
+                    "range": true,
+                    "refId": "A",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    }
+                }
+            ],
+            "title": "Data transferred over radio",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "continuous-BlPu"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green"
+                            }
+                        ]
+                    },
+                    "unit": "decbytes"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 5,
+                "w": 12,
+                "x": 12,
+                "y": 0
+            },
+            "id": 3,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "sum by (deviceType) (\n  abs(deriv(port_tx_bytes_total[$rate_interval])) +\n  abs(deriv(port_rx_bytes_total[$rate_interval]))\n) * $__range",
+                    "format": "time_series",
+                    "instant": false,
+                    "legendFormat": "{{deviceType}}",
+                    "range": true,
+                    "refId": "A",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    }
+                }
+            ],
+            "title": "Data transferred over wire",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green"
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "celsius"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 5,
+                "x": 0,
+                "y": 5
+            },
+            "id": 5,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "temperature{job=\"$job_name\"} \n* on (deviceType, macAddress) group_left(deviceName) \n  max(device_info{job=\"$job_name\"}) by (deviceType, macAddress, deviceName)",
+                    "format": "time_series",
+                    "instant": false,
+                    "legendFormat": "{{ deviceName }}",
+                    "range": true,
+                    "refId": "A",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    }
+                }
+            ],
+            "title": "Temperature",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "max": 100,
+                    "min": 0,
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green"
+                            },
+                            {
+                                "color": "#EAB839",
+                                "value": 5
+                            },
+                            {
+                                "color": "red",
+                                "value": 30
+                            }
+                        ]
+                    },
+                    "unit": "percent"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 7,
+                "x": 5,
+                "y": 5
+            },
+            "id": 6,
+            "options": {
+                "displayMode": "lcd",
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": false
+                },
+                "maxVizHeight": 300,
+                "minVizHeight": 16,
+                "minVizWidth": 8,
+                "namePlacement": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "showUnfilled": true,
+                "sizing": "auto",
+                "valueMode": "color"
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "expr": "max(radio_interference{job=\"$job_name\"}) by (radioFrequency)",
+                    "legendFormat": "{{radioFrequency}}",
+                    "range": true,
+                    "refId": "A",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    }
+                }
+            ],
+            "title": "Max radio interference",
+            "type": "bargauge"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "max": 100,
+                    "min": 0,
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green"
+                            },
+                            {
+                                "color": "#EAB839",
+                                "value": 50
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "percent"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 5,
+                "x": 12,
+                "y": 5
+            },
+            "id": 7,
+            "options": {
+                "minVizHeight": 75,
+                "minVizWidth": 75,
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "sizing": "auto"
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "expr": "max({__name__=~\"radio_.*_usage\",job=\"$job_name\"}) by (radioFrequency)",
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "A",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    }
+                }
+            ],
+            "title": "Max radio usage by frequency",
+            "type": "gauge"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "max": 100,
+                    "min": 0,
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green"
+                            },
+                            {
+                                "color": "#EAB839",
+                                "value": 50
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "percent"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 7,
+                "x": 17,
+                "y": 5
+            },
+            "id": 8,
+            "options": {
+                "minVizHeight": 75,
+                "minVizWidth": 75,
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "sizing": "auto"
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "expr": "max({__name__=~\"radio_.*_usage\",job=\"$job_name\"}) by (deviceType, macAddress)\n* on (deviceType, macAddress) group_left(deviceName) \n  max(device_info{job=\"$job_name\"}) by (deviceType, macAddress, deviceName)",
+                    "legendFormat": "{{deviceName}}",
+                    "range": true,
+                    "refId": "A",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    }
+                }
+            ],
+            "title": "Max radio usage by frequency",
+            "type": "gauge"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green"
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "deviceName"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 107
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "deviceType"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 121
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "IP"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 110
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "macAddress"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 167
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "deviceModel"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 137
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byRegexp",
+                            "options": "/.Usage*/"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.cellOptions",
+                                "value": {
+                                    "type": "gauge"
+                                }
+                            },
+                            {
+                                "id": "max",
+                                "value": 100
+                            },
+                            {
+                                "id": "min",
+                                "value": 0
+                            },
+                            {
+                                "id": "unit",
+                                "value": "percent"
+                            },
+                            {
+                                "id": "color",
+                                "value": {
+                                    "mode": "continuous-GrYlRd"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Status"
+                        },
+                        "properties": [
+                            {
+                                "id": "mappings",
+                                "value": [
+                                    {
+                                        "options": {
+                                            "0": {
+                                                "color": "green",
+                                                "index": 1,
+                                                "text": "Up-to-date"
+                                            },
+                                            "1": {
+                                                "color": "orange",
+                                                "index": 0,
+                                                "text": "Update pending"
+                                            }
+                                        },
+                                        "type": "value"
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "custom.cellOptions",
+                                "value": {
+                                    "applyToRow": false,
+                                    "mode": "basic",
+                                    "type": "color-background",
+                                    "wrapText": false
+                                }
+                            },
+                            {
+                                "id": "custom.width",
+                                "value": 125
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Last Seen"
+                        },
+                        "properties": [
+                            {
+                                "id": "unit",
+                                "value": "dateTimeAsSystem"
+                            },
+                            {
+                                "id": "custom.width",
+                                "value": 160
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "deviceFirmware"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 233
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "CPU Usage"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 196
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "RAM Usage"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 182
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "IP address"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.cellOptions",
+                                "value": {
+                                    "type": "color-background"
+                                }
+                            },
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "blue",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 9
+            },
+            "id": 4,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "frameIndex": 3,
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "device_info{job=\"$job_name\", device_name=\"$device_name\"}",
+                    "format": "table",
+                    "instant": true,
+                    "legendFormat": "__auto",
+                    "range": false,
+                    "refId": "device_info",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    }
+                },
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    },
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "cpu_usage{job=\"$job_name\", device_name=\"$device_name\"}",
+                    "format": "table",
+                    "hide": false,
+                    "instant": true,
+                    "legendFormat": "__auto",
+                    "range": false,
+                    "refId": "CPU"
+                },
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    },
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "memory_usage{job=\"$job_name\", device_name=\"$device_name\"}",
+                    "format": "table",
+                    "hide": false,
+                    "instant": true,
+                    "legendFormat": "__auto",
+                    "range": false,
+                    "refId": "RAM"
+                },
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    },
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "device_upgrade_needed{job=\"$job_name\", device_name=\"$device_name\"}",
+                    "format": "table",
+                    "hide": false,
+                    "instant": true,
+                    "legendFormat": "__auto",
+                    "range": false,
+                    "refId": "Upgrade"
+                },
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "${DS_PROMETHEUS}"
+                    },
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "device_last_seen{job=\"$job_name\"}",
+                    "format": "table",
+                    "hide": false,
+                    "instant": true,
+                    "legendFormat": "__auto",
+                    "range": false,
+                    "refId": "Last_seen"
+                }
+            ],
+            "transformations": [
+                {
+                    "id": "joinByField",
+                    "options": {
+                        "byField": "macAddress",
+                        "mode": "inner"
+                    }
+                },
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "Time": true,
+                            "Time 1": true,
+                            "Time 2": true,
+                            "Time 3": true,
+                            "Time 4": true,
+                            "Time 5": true,
+                            "Value": true,
+                            "Value #device_info": true,
+                            "__name__": true,
+                            "__name__ 1": true,
+                            "__name__ 2": true,
+                            "__name__ 3": true,
+                            "__name__ 4": true,
+                            "__name__ 5": true,
+                            "deviceType 1": true,
+                            "deviceType 2": true,
+                            "deviceType 3": true,
+                            "deviceType 4": true,
+                            "deviceType 5": true,
+                            "device_name": true,
+                            "device_name 1": true,
+                            "device_name 2": true,
+                            "device_name 3": true,
+                            "device_name 4": true,
+                            "device_name 5": true,
+                            "hardwareVersion": true,
+                            "instance": true,
+                            "instance 1": true,
+                            "instance 2": true,
+                            "instance 3": true,
+                            "instance 4": true,
+                            "instance 5": true,
+                            "job": true,
+                            "job 1": true,
+                            "job 2": true,
+                            "job 3": true,
+                            "job 4": true,
+                            "job 5": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {
+                            "IP": 1,
+                            "Time 1": 9,
+                            "Time 2": 16,
+                            "Time 3": 23,
+                            "Time 4": 29,
+                            "Time 5": 35,
+                            "Value #CPU": 7,
+                            "Value #Last_seen": 5,
+                            "Value #RAM": 8,
+                            "Value #Upgrade": 6,
+                            "Value #device_info": 15,
+                            "__name__ 1": 10,
+                            "__name__ 2": 18,
+                            "__name__ 3": 24,
+                            "__name__ 4": 30,
+                            "__name__ 5": 36,
+                            "deviceFirmware": 4,
+                            "deviceModel": 3,
+                            "deviceName": 0,
+                            "deviceType 1": 11,
+                            "deviceType 2": 19,
+                            "deviceType 3": 25,
+                            "deviceType 4": 31,
+                            "deviceType 5": 37,
+                            "device_name 1": 12,
+                            "device_name 2": 20,
+                            "device_name 3": 26,
+                            "device_name 4": 32,
+                            "device_name 5": 38,
+                            "hardwareVersion": 17,
+                            "instance 1": 13,
+                            "instance 2": 21,
+                            "instance 3": 27,
+                            "instance 4": 33,
+                            "instance 5": 39,
+                            "job 1": 14,
+                            "job 2": 22,
+                            "job 3": 28,
+                            "job 4": 34,
+                            "job 5": 40,
+                            "macAddress": 2
+                        },
+                        "renameByName": {
+                            "IP": "IP address",
+                            "Value #A": "CPU Usage",
+                            "Value #CPU": "CPU Usage",
+                            "Value #Last_seen": "Last Seen",
+                            "Value #RAM": "RAM Usage",
+                            "Value #Upgrade": "Status",
+                            "deviceFirmware": "Firmware",
+                            "deviceModel": "Model",
+                            "deviceName": "Name",
+                            "hardwareVersion": "",
+                            "macAddress": "Mac Address"
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        }
+    ],
+    "schemaVersion": 41,
+    "tags": [
+        "Omada"
+    ],
+    "templating": {
+        "list": [
+            {
+                "hide": 2,
+                "name": "job_name",
+                "query": "${VAR_JOB_NAME}",
+                "skipUrlSync": true,
+                "type": "constant",
+                "current": {
+                    "value": "${VAR_JOB_NAME}",
+                    "text": "${VAR_JOB_NAME}",
+                    "selected": false
+                },
+                "options": [
+                    {
+                        "value": "${VAR_JOB_NAME}",
+                        "text": "${VAR_JOB_NAME}",
+                        "selected": false
+                    }
+                ]
+            },
+            {
+                "allowCustomValue": false,
+                "current": {},
+                "definition": "label_values(device_last_seen{job=\"$job_name\"},device_name)",
+                "label": "Controler Name",
+                "name": "device_name",
+                "options": [],
+                "query": {
+                    "qryType": 1,
+                    "query": "label_values(device_last_seen{job=\"$job_name\"},device_name)",
+                    "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                },
+                "refresh": 1,
+                "regex": "",
+                "type": "query"
+            },
+            {
+                "hide": 2,
+                "name": "rate_interval",
+                "query": "${VAR_RATE_INTERVAL}",
+                "skipUrlSync": true,
+                "type": "constant",
+                "current": {
+                    "value": "${VAR_RATE_INTERVAL}",
+                    "text": "${VAR_RATE_INTERVAL}",
+                    "selected": false
+                },
+                "options": [
+                    {
+                        "value": "${VAR_RATE_INTERVAL}",
+                        "text": "${VAR_RATE_INTERVAL}",
+                        "selected": false
+                    }
+                ]
+            }
+        ]
+    },
+    "time": {
+        "from": "now-6h",
+        "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "Europe/Warsaw",
+    "title": "Site overview",
+    "uid": "d8f7ba8c-a7b5-4d9a-a1d7-8dc57a053f66",
+    "version": 11,
+    "weekStart": ""
+}
