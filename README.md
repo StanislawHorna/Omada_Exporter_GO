@@ -119,3 +119,10 @@ All configuration values are read from environment variables. These can be provi
 | `OMADA_CLIENT_SECRET` | OpenAPI Client Secret                                                  | -       |
 | `OMADA_USERNAME`      | Username for Web API access                                            | -       |
 | `OMADA_PASSWORD`      | Password for Web API access                                            | -       |
+
+## Tested on devices:
+
+- **Switch**: [SG2218 v1.20](https://www.tp-link.com/en/business-networking/omada-switch-smart/sg2218/)
+- **Router**: [ER707-M2 v1.0](https://www.tp-link.com/en/business-networking/omada-router-wired-router/er707-m2/v1/)
+- **Access Point**: [EAP650(EU) v1.0](https://www.tp-link.com/en/business-networking/omada-wifi-ceiling-mount/eap650/v1/)
+- **Omada controller**: [Software Controller v5.15.8.s hosted in Docker container](https://github.com/mbentley/docker-omada-controller)
