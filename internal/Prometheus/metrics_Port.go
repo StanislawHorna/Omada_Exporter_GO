@@ -127,7 +127,7 @@ func setPortInfo(port Interface.Port, labels prometheus.Labels) {
 	// Delete all info metrics to avoid duplicates created due to changed labels
 	// new set of labels always creates new series, but old one is not deleted,
 	// even if it was not set in the current iteration
-	port_info.Delete(labels)
+	port_info.DeletePartialMatch(labels)
 	port_info.With(Utils.AppendMaps(labels, map[string]string{
 		label_portName:     port.GetPortName(),
 		label_portIP:       port.GetPortIP(),

@@ -145,7 +145,7 @@ func setRadioInfo(radio Interface.Radio, labels prometheus.Labels) {
 	// Delete all info metrics to avoid duplicates created due to changed labels
 	// new set of labels always creates new series, but old one is not deleted,
 	// even if it was not set in the current iteration
-	radio_info.Delete(labels)
+	radio_info.DeletePartialMatch(labels)
 	radio_info.With(Utils.AppendMaps(labels, map[string]string{
 		label_channel:   radio.GetActualChannel(),
 		label_bandwidth: radio.GetBandwidth(),
