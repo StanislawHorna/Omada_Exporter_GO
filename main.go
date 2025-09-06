@@ -11,7 +11,6 @@ import (
 func main() {
 	Log.Init()
 	Log.Info("Starting %s", internal.AppName)
-	http.Handle("/omadaMetrics", Prometheus.OmadaMetricsHandler())
 	http.Handle("/metrics", Prometheus.OmadaMetricsHandler())
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		panic(err)
